@@ -22,10 +22,14 @@ export default function Dashboard() {
 
     const { data: responses } = await supabase
       .from("responses")
-      .select("response_value");
+      .select("session_id, response_value");
 
     const totalProjects = projects?.length || 0;
-    const totalResponses = responses?.length || 0;
+    
+    // Count unique session_ids (unique form submissions)
+    const uniqueSessions = new Set(responses?.map(r => r.session_id) || []).size;
+    const totalResponses = uniqueSessions;
+    
     const ratings = responses?.filter(r => r.response_value).map(r => r.response_value) || [];
     const averageRating = ratings.length > 0
       ? ratings.reduce((a, b) => a + b, 0) / ratings.length
@@ -57,10 +61,10 @@ export default function Dashboard() {
       color: "text-yellow-500",
     },
     {
-      title: "Taxa de Resposta",
-      value: stats.totalProjects > 0 ? Math.round((stats.totalResponses / stats.totalProjects) * 10) : 0,
+      title: "Média de Respostas",
+      value: stats.totalProjects > 0 ? Math.round((stats.totalResponses / stats.totalProjects) * 10) / 10 : 0,
       icon: TrendingUp,
-      description: "Respostas por projeto",
+      description: "Por projeto criado",
       color: "text-green-500",
     },
   ];
