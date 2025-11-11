@@ -14,6 +14,7 @@ const Projects = lazy(() => import("./pages/Projects"));
 const ProjectDashboard = lazy(() => import("./pages/ProjectDashboard"));
 const PublicForm = lazy(() => import("./pages/PublicForm"));
 const Settings = lazy(() => import("./pages/Settings"));
+const KanbanView = lazy(() => import("./pages/KanbanView"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Loading fallback component
@@ -73,6 +74,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Settings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/kanban"
+              element={
+                <ProtectedRoute>
+                  <KanbanView />
                 </ProtectedRoute>
               }
             />
