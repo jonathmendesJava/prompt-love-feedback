@@ -17,7 +17,7 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 210 20% 15%;
 
-    --primary: 160 100% 49%;
+    --primary: 160 100% 35%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 210 20% 96%;
@@ -26,7 +26,7 @@ All colors MUST be HSL.
     --muted: 210 20% 96%;
     --muted-foreground: 210 15% 50%;
 
-    --accent: 160 100% 49%;
+    --accent: 160 100% 35%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -34,26 +34,26 @@ All colors MUST be HSL.
 
     --border: 210 20% 90%;
     --input: 210 20% 90%;
-    --ring: 160 100% 49%;
+    --ring: 160 100% 35%;
 
     --radius: 0.75rem;
 
     --sidebar-background: 0 0% 0%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 160 100% 49%;
+    --sidebar-primary: 160 100% 35%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 10%;
-    --sidebar-accent-foreground: 160 100% 49%;
+    --sidebar-accent-foreground: 160 100% 35%;
     --sidebar-border: 0 0% 15%;
-    --sidebar-ring: 160 100% 49%;
+    --sidebar-ring: 160 100% 35%;
 
-    --neon-green: 160 100% 49%;
+    --neon-green: 160 100% 35%;
     --dark-gray: 210 25% 12%;
     --light-gray: 210 20% 96%;
     
-    --gradient-primary: linear-gradient(135deg, hsl(160 100% 49%), hsl(160 100% 40%));
+    --gradient-primary: linear-gradient(135deg, hsl(160 100% 35%), hsl(160 100% 28%));
     --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 20% 98%));
-    --shadow-neon: 0 0 20px hsl(160 100% 49% / 0.3);
+    --shadow-neon: 0 0 20px hsl(160 100% 35% / 0.3);
     --shadow-card: 0 4px 20px hsl(210 20% 15% / 0.08);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -68,7 +68,7 @@ All colors MUST be HSL.
     --popover: 210 25% 12%;
     --popover-foreground: 210 20% 95%;
 
-    --primary: 160 100% 49%;
+    --primary: 160 100% 35%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 210 20% 18%;
@@ -77,7 +77,7 @@ All colors MUST be HSL.
     --muted: 210 20% 18%;
     --muted-foreground: 210 15% 60%;
 
-    --accent: 160 100% 49%;
+    --accent: 160 100% 35%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -85,16 +85,16 @@ All colors MUST be HSL.
 
     --border: 210 20% 20%;
     --input: 210 20% 20%;
-    --ring: 160 100% 49%;
+    --ring: 160 100% 35%;
 
     --sidebar-background: 0 0% 0%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 160 100% 49%;
+    --sidebar-primary: 160 100% 35%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 10%;
-    --sidebar-accent-foreground: 160 100% 49%;
+    --sidebar-accent-foreground: 160 100% 35%;
     --sidebar-border: 0 0% 15%;
-    --sidebar-ring: 160 100% 49%;
+    --sidebar-ring: 160 100% 35%;
 
     --gradient-card: linear-gradient(180deg, hsl(210 25% 12%), hsl(210 25% 10%));
     --shadow-card: 0 4px 20px hsl(0 0% 0% / 0.3);
