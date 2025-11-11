@@ -1,0 +1,57 @@
+/* Animações para inputs de avaliação */
+.rating-button {
+  @apply transition-all duration-200 hover:scale-110 active:scale-95;
+}
+
+.rating-button-selected {
+  @apply scale-110 ring-2 ring-primary ring-offset-2 ring-offset-background;
+}
+
+/* Grid responsivo para matriz */
+.matrix-grid {
+  @apply overflow-x-auto;
+}
+
+.matrix-grid table {
+  @apply min-w-full border-collapse;
+}
+
+/* Emojis hover effect */
+.emoji-button {
+  @apply transition-transform duration-200 cursor-pointer;
+}
+
+.emoji-button:hover {
+  @apply scale-125;
+}
+
+.emoji-button-selected {
+  @apply scale-125 drop-shadow-lg;
+}
+
+/* Like/Dislike buttons */
+.like-dislike-button {
+  @apply transition-all duration-200 hover:scale-105 active:scale-95;
+}
+
+.like-dislike-button-selected {
+  @apply ring-2 ring-primary ring-offset-2 ring-offset-background;
+}
+
+/* Likert scale buttons */
+.likert-button {
+  @apply transition-all duration-200 hover:bg-accent;
+}
+
+.likert-button-selected {
+  @apply bg-primary text-primary-foreground hover:bg-primary/90;
+}
+
+/* Choice options */
+.choice-option {
+  @apply transition-colors duration-150;
+}
+
+.choice-option:hover {
+  @apply bg-accent;
+}

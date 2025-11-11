@@ -10,13 +10,25 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Trash2, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Question as QuestionType, ScaleConfig, QuestionType as QType } from "@/types/questions";
+import QuestionPreview from "@/components/QuestionPreview";
+import NPSConfig from "@/components/question-config/NPSConfig";
+import CSATConfig from "@/components/question-config/CSATConfig";
+import CESConfig from "@/components/question-config/CESConfig";
+import StarsConfig from "@/components/question-config/StarsConfig";
+import EmojiConfig from "@/components/question-config/EmojiConfig";
+import HeartConfig from "@/components/question-config/HeartConfig";
+import LikeDislikeConfig from "@/components/question-config/LikeDislikeConfig";
+import ChoiceConfig from "@/components/question-config/ChoiceConfig";
+import LikertConfig from "@/components/question-config/LikertConfig";
+import MatrixConfig from "@/components/question-config/MatrixConfig";
 
 interface Question {
   id: string;
   question_text: string;
-  question_type: "text" | "multiple_choice" | "stars";
-  options?: string[];
-  max_stars?: number;
+  question_type: QType;
+  order_index: number;
+  scale_config?: ScaleConfig;
 }
 
 export default function CreateProject() {
@@ -25,7 +37,7 @@ export default function CreateProject() {
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [questions, setQuestions] = useState<Question[]>([
-    { id: "1", question_text: "", question_type: "text" },
+    { id: "1", question_text: "", question_type: "text", order_index: 0, scale_config: {} },
   ]);
 
   const addQuestion = () => {
@@ -33,6 +45,8 @@ export default function CreateProject() {
       id: Date.now().toString(),
       question_text: "",
       question_type: "text",
+      order_index: questions.length,
+      scale_config: {},
     };
     setQuestions([...questions, newQuestion]);
   };
@@ -73,8 +87,7 @@ export default function CreateProject() {
         project_id: project.id,
         question_text: q.question_text,
         question_type: q.question_type,
-        options: q.options || null,
-        max_stars: q.question_type === "stars" ? (q.max_stars || 5) : null,
+        scale_config: (q.scale_config || null) as any,
         order_index: index,
       }));
 
@@ -142,78 +155,159 @@ export default function CreateProject() {
                 Configure as perguntas do seu formulário
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               {questions.map((question, index) => (
-                <Card key={question.id} className="border-2">
-                  <CardContent className="pt-6 space-y-4">
-                    <div className="flex justify-between items-start">
-                      <Label>Pergunta {index + 1}</Label>
-                      {questions.length > 1 && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeQuestion(question.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-
-                    <Input
-                      placeholder="Digite a pergunta..."
-                      value={question.question_text}
-                      onChange={(e) =>
-                        updateQuestion(question.id, "question_text", e.target.value)
-                      }
-                      required
-                    />
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Tipo de Resposta</Label>
-                        <Select
-                          value={question.question_type}
-                          onValueChange={(value) =>
-                            updateQuestion(question.id, "question_type", value)
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="text">Texto Aberto</SelectItem>
-                            <SelectItem value="stars">Estrelas</SelectItem>
-                            <SelectItem value="multiple_choice">Múltipla Escolha</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {question.question_type === "stars" && (
+                <div key={question.id} className="grid lg:grid-cols-2 gap-6">
+                  {/* Coluna Esquerda - Configuração */}
+                  <div className="space-y-4">
+                    <Card className="border-2">
+                      <CardHeader>
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <CardTitle className="text-lg">Pergunta {index + 1}</CardTitle>
+                            <CardDescription>Configure os detalhes da pergunta</CardDescription>
+                          </div>
+                          {questions.length > 1 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeQuestion(question.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
                         <div className="space-y-2">
-                          <Label>Número de Estrelas</Label>
+                          <Label htmlFor={`question-${question.id}`}>Texto da Pergunta *</Label>
+                          <Textarea
+                            id={`question-${question.id}`}
+                            placeholder="Digite a pergunta..."
+                            value={question.question_text}
+                            onChange={(e) =>
+                              updateQuestion(question.id, "question_text", e.target.value)
+                            }
+                            required
+                            rows={3}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor={`type-${question.id}`}>Tipo de Resposta *</Label>
                           <Select
-                            value={question.max_stars?.toString() || "5"}
+                            value={question.question_type}
                             onValueChange={(value) =>
-                              updateQuestion(question.id, "max_stars", parseInt(value))
+                              updateQuestion(question.id, "question_type", value)
                             }
                           >
-                            <SelectTrigger>
+                            <SelectTrigger id={`type-${question.id}`}>
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              {[3, 4, 5, 10].map((num) => (
-                                <SelectItem key={num} value={num.toString()}>
-                                  {num} estrelas
-                                </SelectItem>
-                              ))}
+                              <SelectItem value="text">📝 Texto Aberto</SelectItem>
+                              <SelectItem value="nps">📊 NPS (0-10)</SelectItem>
+                              <SelectItem value="csat">😊 CSAT (Satisfação)</SelectItem>
+                              <SelectItem value="ces">⚡ CES (Esforço)</SelectItem>
+                              <SelectItem value="stars">⭐ Estrelas</SelectItem>
+                              <SelectItem value="emojis">😄 Emojis</SelectItem>
+                              <SelectItem value="hearts">❤️ Corações</SelectItem>
+                              <SelectItem value="single_choice">◉ Escolha Única</SelectItem>
+                              <SelectItem value="multiple_choice">☑ Múltipla Escolha</SelectItem>
+                              <SelectItem value="like_dislike">👍 Like/Dislike</SelectItem>
+                              <SelectItem value="likert">📏 Escala Likert</SelectItem>
+                              <SelectItem value="matrix">⊞ Matriz</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+
+                        {/* Configurações específicas por tipo */}
+                        {question.question_type === "nps" && (
+                          <NPSConfig
+                            config={question.scale_config || {}}
+                            onChange={(config) => updateQuestion(question.id, "scale_config", config)}
+                          />
+                        )}
+                        {question.question_type === "csat" && (
+                          <CSATConfig
+                            config={question.scale_config || {}}
+                            onChange={(config) => updateQuestion(question.id, "scale_config", config)}
+                          />
+                        )}
+                        {question.question_type === "ces" && (
+                          <CESConfig
+                            config={question.scale_config || {}}
+                            onChange={(config) => updateQuestion(question.id, "scale_config", config)}
+                          />
+                        )}
+                        {question.question_type === "stars" && (
+                          <StarsConfig
+                            config={question.scale_config || {}}
+                            onChange={(config) => updateQuestion(question.id, "scale_config", config)}
+                          />
+                        )}
+                        {question.question_type === "emojis" && (
+                          <EmojiConfig
+                            config={question.scale_config || {}}
+                            onChange={(config) => updateQuestion(question.id, "scale_config", config)}
+                          />
+                        )}
+                        {question.question_type === "hearts" && (
+                          <HeartConfig
+                            config={question.scale_config || {}}
+                            onChange={(config) => updateQuestion(question.id, "scale_config", config)}
+                          />
+                        )}
+                        {question.question_type === "like_dislike" && (
+                          <LikeDislikeConfig
+                            config={question.scale_config || {}}
+                            onChange={(config) => updateQuestion(question.id, "scale_config", config)}
+                          />
+                        )}
+                        {question.question_type === "single_choice" && (
+                          <ChoiceConfig
+                            config={question.scale_config || {}}
+                            onChange={(config) => updateQuestion(question.id, "scale_config", config)}
+                            isMultiple={false}
+                          />
+                        )}
+                        {question.question_type === "multiple_choice" && (
+                          <ChoiceConfig
+                            config={question.scale_config || {}}
+                            onChange={(config) => updateQuestion(question.id, "scale_config", config)}
+                            isMultiple={true}
+                          />
+                        )}
+                        {question.question_type === "likert" && (
+                          <LikertConfig
+                            config={question.scale_config || {}}
+                            onChange={(config) => updateQuestion(question.id, "scale_config", config)}
+                          />
+                        )}
+                        {question.question_type === "matrix" && (
+                          <MatrixConfig
+                            config={question.scale_config || {}}
+                            onChange={(config) => updateQuestion(question.id, "scale_config", config)}
+                          />
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Coluna Direita - Preview */}
+                  <div className="lg:sticky lg:top-6 lg:self-start">
+                    <Card className="bg-muted/30">
+                      <CardHeader>
+                        <CardTitle className="text-lg">👁️ Pré-visualização</CardTitle>
+                        <CardDescription>Como a pergunta aparecerá no formulário</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <QuestionPreview question={question} index={index} />
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
               ))}
 
               <Button

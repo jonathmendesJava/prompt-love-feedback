@@ -54,6 +54,7 @@ export type Database = {
           project_id: string
           question_text: string
           question_type: string
+          scale_config: Json | null
         }
         Insert: {
           created_at?: string
@@ -64,6 +65,7 @@ export type Database = {
           project_id: string
           question_text: string
           question_type: string
+          scale_config?: Json | null
         }
         Update: {
           created_at?: string
@@ -74,6 +76,7 @@ export type Database = {
           project_id?: string
           question_text?: string
           question_type?: string
+          scale_config?: Json | null
         }
         Relationships: [
           {
@@ -90,6 +93,7 @@ export type Database = {
           id: string
           project_id: string
           question_id: string
+          response_data: Json | null
           response_text: string | null
           response_value: number | null
           session_id: string
@@ -99,6 +103,7 @@ export type Database = {
           id?: string
           project_id: string
           question_id: string
+          response_data?: Json | null
           response_text?: string | null
           response_value?: number | null
           session_id: string
@@ -108,6 +113,7 @@ export type Database = {
           id?: string
           project_id?: string
           question_id?: string
+          response_data?: Json | null
           response_text?: string | null
           response_value?: number | null
           session_id?: string
