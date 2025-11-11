@@ -100,7 +100,7 @@ export default function Dashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Bem-vindo ao FIOS SayIt</CardTitle>
+            <CardTitle>Bem-vindo ao Fios DizAí</CardTitle>
             <CardDescription>
               Gerencie seus projetos de avaliação de atendimento de forma simples e eficiente
             </CardDescription>

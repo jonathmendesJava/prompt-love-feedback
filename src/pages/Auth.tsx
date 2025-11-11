@@ -74,7 +74,7 @@ export default function Auth() {
             >
               <div>
                 <div className="mb-8">
-                  <h1 className="text-4xl font-bold text-white">FIOS SayIt</h1>
+                  <h1 className="text-4xl font-bold text-white">Fios DizAí</h1>
                 </div>
                 <h2 className="text-3xl font-bold text-white mb-4">
                   Sistema de Avaliação
@@ -84,8 +84,8 @@ export default function Auth() {
                   Crie formulários personalizados e colete feedback valioso dos seus clientes.
                 </p>
               </div>
-              <div className="text-white/50 text-sm">
-                www.fios-sayit.com
+                <div className="text-white/50 text-sm">
+                www.fiosdizai.com
               </div>
             </div>
 
@@ -97,7 +97,7 @@ export default function Auth() {
             >
               <div>
                 <div className="mb-8">
-                  <h1 className="text-4xl font-bold text-white">FIOS SayIt</h1>
+                  <h1 className="text-4xl font-bold text-white">Fios DizAí</h1>
                 </div>
                 <h2 className="text-3xl font-bold text-white mb-4">
                   Bem-vindo!
@@ -108,7 +108,7 @@ export default function Auth() {
                 </p>
               </div>
               <div className="text-white/50 text-sm">
-                www.fios-sayit.com
+                www.fiosdizai.com
               </div>
             </div>
 

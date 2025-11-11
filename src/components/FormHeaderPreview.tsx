@@ -22,7 +22,7 @@ export default function FormHeaderPreview({
       <CardHeader className="text-center">
         <div className="flex items-center justify-center gap-3 mb-4">
           <img src={fiosLogo} alt="FiOS Logo" className="h-10 w-auto" />
-          <CardTitle className="text-3xl text-primary">FIOS SayIt</CardTitle>
+          <CardTitle className="text-3xl text-primary">Fios DizAí</CardTitle>
         </div>
         <CardTitle className="text-2xl mt-4">{displayTitle}</CardTitle>
         {displayDescription && (
