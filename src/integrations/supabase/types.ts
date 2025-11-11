@@ -135,7 +135,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_project_by_link: {
+        Args: { link: string }
+        Returns: {
+          description: string
+          id: string
+          name: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

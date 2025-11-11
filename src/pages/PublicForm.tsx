@@ -31,19 +31,21 @@ export default function PublicForm() {
 
   const loadForm = async () => {
     try {
+      // Use RPC function to get project data securely
       const { data: projectData, error: projectError } = await supabase
-        .from("projects")
-        .select("*")
-        .eq("link_unique", linkUnique)
-        .single();
+        .rpc("get_project_by_link", { link: linkUnique });
 
-      if (projectError) throw projectError;
-      setProject(projectData);
+      if (projectError || !projectData || projectData.length === 0) {
+        throw new Error("Project not found");
+      }
+
+      const project = projectData[0];
+      setProject(project);
 
       const { data: questionsData, error: questionsError } = await supabase
         .from("questions")
         .select("*")
-        .eq("project_id", projectData.id)
+        .eq("project_id", project.id)
         .order("order_index");
 
       if (questionsError) throw questionsError;
