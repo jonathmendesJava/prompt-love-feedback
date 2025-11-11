@@ -38,13 +38,13 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
 
-    --sidebar-background: 210 25% 12%;
-    --sidebar-foreground: 210 20% 95%;
+    --sidebar-background: 0 0% 0%;
+    --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 160 100% 49%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 20% 18%;
+    --sidebar-accent: 0 0% 10%;
     --sidebar-accent-foreground: 160 100% 49%;
-    --sidebar-border: 210 20% 20%;
+    --sidebar-border: 0 0% 15%;
     --sidebar-ring: 160 100% 49%;
 
     --neon-green: 160 100% 49%;
@@ -87,13 +87,13 @@ All colors MUST be HSL.
     --input: 210 20% 20%;
     --ring: 160 100% 49%;
 
-    --sidebar-background: 210 25% 10%;
-    --sidebar-foreground: 210 20% 95%;
+    --sidebar-background: 0 0% 0%;
+    --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 160 100% 49%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 20% 15%;
+    --sidebar-accent: 0 0% 10%;
     --sidebar-accent-foreground: 160 100% 49%;
-    --sidebar-border: 210 20% 18%;
+    --sidebar-border: 0 0% 15%;
     --sidebar-ring: 160 100% 49%;
 
     --gradient-card: linear-gradient(180deg, hsl(210 25% 12%), hsl(210 25% 10%));
