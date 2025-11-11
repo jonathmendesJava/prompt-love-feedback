@@ -1,6 +1,7 @@
 import { Home, Settings, Plus, FolderOpen } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
+import fiosLogo from "@/assets/fios-logo.png";
 import {
   Sidebar,
   SidebarContent,
@@ -28,10 +29,17 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarContent className="bg-sidebar">
         <div className="p-4 border-b border-sidebar-border">
-          {open && (
-            <h2 className="text-xl font-bold text-sidebar-primary">
-              FiOS | CTA
-            </h2>
+          {open ? (
+            <div className="flex items-center gap-3">
+              <img src={fiosLogo} alt="FiOS Logo" className="h-8 w-auto" />
+              <h2 className="text-xl font-bold text-sidebar-primary">
+                FiOS | CTA
+              </h2>
+            </div>
+          ) : (
+            <div className="flex justify-center">
+              <img src={fiosLogo} alt="FiOS Logo" className="h-8 w-auto" />
+            </div>
           )}
         </div>
 

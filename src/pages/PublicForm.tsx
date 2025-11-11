@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import fiosLogo from "@/assets/fios-logo.png";
 
 interface Question {
   id: string;
@@ -111,7 +112,10 @@ export default function PublicForm() {
       <div className="max-w-2xl mx-auto">
         <Card className="shadow-xl">
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl text-primary">FiOS | CTA</CardTitle>
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <img src={fiosLogo} alt="FiOS Logo" className="h-10 w-auto" />
+              <CardTitle className="text-3xl text-primary">FiOS | CTA</CardTitle>
+            </div>
             <CardTitle className="text-2xl mt-4">{project?.name}</CardTitle>
             {project?.description && (
               <CardDescription className="text-base mt-2">
