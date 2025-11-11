@@ -3,27 +3,36 @@ import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, Copy, Star } from "lucide-react";
+import { ArrowLeft, Copy, Star, Eye } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { FormResponseDialog } from "@/components/FormResponseDialog";
 
-interface Response {
+interface FormSubmission {
+  session_id: string;
+  submitted_at: string;
+  question_count: number;
+}
+
+interface ResponseDetail {
   id: string;
   question_text: string;
+  question_type: string;
   response_text: string | null;
   response_value: number | null;
-  submitted_at: string;
 }
 
 export default function ProjectDashboard() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [project, setProject] = useState<any>(null);
-  const [responses, setResponses] = useState<Response[]>([]);
+  const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
   const [stats, setStats] = useState({ total: 0, avgRating: 0 });
   const [loading, setLoading] = useState(true);
+  const [selectedSession, setSelectedSession] = useState<string | null>(null);
+  const [sessionResponses, setSessionResponses] = useState<ResponseDetail[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     if (id) loadProjectData();
@@ -40,45 +49,89 @@ export default function ProjectDashboard() {
       if (projectError) throw projectError;
       setProject(projectData);
 
-      const { data: responsesData, error: responsesError } = await supabase
+      // Buscar todas as respostas para calcular estatísticas
+      const { data: allResponses, error: responsesError } = await supabase
         .from("responses")
-        .select(`
-          id,
-          response_text,
-          response_value,
-          submitted_at,
-          questions (question_text)
-        `)
-        .eq("project_id", id)
-        .order("submitted_at", { ascending: false });
+        .select("session_id, response_value, submitted_at")
+        .eq("project_id", id);
 
       if (responsesError) throw responsesError;
 
-      const formattedResponses = responsesData.map((r: any) => ({
-        id: r.id,
-        question_text: r.questions?.question_text || "Pergunta não encontrada",
-        response_text: r.response_text,
-        response_value: r.response_value,
-        submitted_at: r.submitted_at,
-      }));
-
-      setResponses(formattedResponses);
-
-      const ratings = responsesData
+      // Agrupar por session_id para contar formulários únicos
+      const uniqueSessions = new Set(allResponses.map(r => r.session_id));
+      
+      // Calcular média de avaliações
+      const ratings = allResponses
         .filter((r: any) => r.response_value)
         .map((r: any) => r.response_value);
 
       setStats({
-        total: responsesData.length,
+        total: uniqueSessions.size,
         avgRating: ratings.length > 0
           ? ratings.reduce((a: number, b: number) => a + b, 0) / ratings.length
           : 0,
       });
+
+      // Buscar submissions únicas com contagem de perguntas
+      const submissionsMap = new Map<string, FormSubmission>();
+      
+      allResponses.forEach((r: any) => {
+        if (!submissionsMap.has(r.session_id)) {
+          submissionsMap.set(r.session_id, {
+            session_id: r.session_id,
+            submitted_at: r.submitted_at,
+            question_count: 1,
+          });
+        } else {
+          const existing = submissionsMap.get(r.session_id)!;
+          existing.question_count += 1;
+        }
+      });
+
+      const submissionsArray = Array.from(submissionsMap.values())
+        .sort((a, b) => new Date(b.submitted_at).getTime() - new Date(a.submitted_at).getTime());
+
+      setSubmissions(submissionsArray);
     } catch (error: any) {
       toast.error("Erro ao carregar dados");
       navigate("/projects");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadSessionDetails = async (sessionId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("responses")
+        .select(`
+          id,
+          response_text,
+          response_value,
+          questions (
+            question_text,
+            question_type,
+            order_index
+          )
+        `)
+        .eq("session_id", sessionId)
+        .order("id");
+
+      if (error) throw error;
+
+      const formatted = data.map((r: any) => ({
+        id: r.id,
+        question_text: r.questions?.question_text || "Pergunta não encontrada",
+        question_type: r.questions?.question_type || "text",
+        response_text: r.response_text,
+        response_value: r.response_value,
+      }));
+
+      setSessionResponses(formatted);
+      setSelectedSession(sessionId);
+      setDialogOpen(true);
+    } catch (error: any) {
+      toast.error("Erro ao carregar detalhes");
     }
   };
 
@@ -120,7 +173,7 @@ export default function ProjectDashboard() {
         <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total de Respostas</CardTitle>
+              <CardTitle className="text-sm font-medium">Formulários Respondidos</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{stats.total}</div>
@@ -142,45 +195,43 @@ export default function ProjectDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Respostas Recebidas</CardTitle>
+            <CardTitle>Formulários Respondidos</CardTitle>
             <CardDescription>Todos os feedbacks enviados pelos clientes</CardDescription>
           </CardHeader>
           <CardContent>
-            {responses.length === 0 ? (
+            {submissions.length === 0 ? (
               <p className="text-center text-muted-foreground py-8">
-                Nenhuma resposta recebida ainda
+                Nenhum formulário respondido ainda
               </p>
             ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Pergunta</TableHead>
-                    <TableHead>Resposta</TableHead>
-                    <TableHead>Data</TableHead>
+                    <TableHead>Data e Hora</TableHead>
+                    <TableHead>Perguntas Respondidas</TableHead>
+                    <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {responses.map((response) => (
-                    <TableRow key={response.id}>
+                  {submissions.map((submission) => (
+                    <TableRow key={submission.session_id}>
                       <TableCell className="font-medium">
-                        {response.question_text}
+                        {new Date(submission.submitted_at).toLocaleString()}
                       </TableCell>
                       <TableCell>
-                        {response.response_value ? (
-                          <div className="flex items-center gap-1">
-                            {Array.from({ length: response.response_value }).map((_, i) => (
-                              <Star key={i} className="h-4 w-4 fill-yellow-500 text-yellow-500" />
-                            ))}
-                            <span className="ml-2 text-sm text-muted-foreground">
-                              {response.response_value}/5
-                            </span>
-                          </div>
-                        ) : (
-                          <span>{response.response_text || "-"}</span>
-                        )}
+                        <span className="text-muted-foreground">
+                          {submission.question_count} {submission.question_count === 1 ? 'pergunta' : 'perguntas'}
+                        </span>
                       </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {new Date(response.submitted_at).toLocaleString()}
+                      <TableCell className="text-right">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => loadSessionDetails(submission.session_id)}
+                        >
+                          <Eye className="h-4 w-4 mr-2" />
+                          Ver Detalhes
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -189,6 +240,13 @@ export default function ProjectDashboard() {
             )}
           </CardContent>
         </Card>
+        
+        <FormResponseDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          responses={sessionResponses}
+          submittedAt={submissions.find(s => s.session_id === selectedSession)?.submitted_at || ""}
+        />
       </div>
     </DashboardLayout>
   );
