@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import fiosLogo from "@/assets/fios-logo.png";
+import fiosLogo from "@/assets/fios-logo-public.png";
 
 interface Question {
   id: string;
