@@ -43,7 +43,7 @@ export default function Dashboard() {
       title: "Total de Projetos",
       value: stats.totalProjects,
       icon: FolderOpen,
-      description: "Projetos CTA criados",
+      description: "Projetos criados",
       color: "text-primary",
     },
     {
@@ -75,7 +75,7 @@ export default function Dashboard() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground mt-2">
-            Visão geral do sistema de avaliação CTA
+            Visão geral do sistema de avaliação
           </p>
         </div>
 
@@ -100,7 +100,7 @@ export default function Dashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Bem-vindo ao Sistema CTA</CardTitle>
+            <CardTitle>Bem-vindo ao FIOS SayIt</CardTitle>
             <CardDescription>
               Gerencie seus projetos de avaliação de atendimento de forma simples e eficiente
             </CardDescription>
@@ -111,7 +111,7 @@ export default function Dashboard() {
                 <FolderOpen className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold">Crie Projetos CTA</h3>
+                <h3 className="font-semibold">Crie Projetos de Avaliação</h3>
                 <p className="text-sm text-muted-foreground">
                   Configure formulários personalizados com perguntas e escalas de avaliação
                 </p>

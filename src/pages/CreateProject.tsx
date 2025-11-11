@@ -110,7 +110,7 @@ export default function CreateProject() {
     <DashboardLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Criar Projeto CTA</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Criar Projeto</h1>
           <p className="text-muted-foreground mt-2">
             Configure um novo formulário de avaliação
           </p>
@@ -129,7 +129,7 @@ export default function CreateProject() {
                 <Label htmlFor="name">Nome do Projeto *</Label>
                 <Input
                   id="name"
-                  placeholder="Ex: CTA - Suporte Técnico"
+                  placeholder="Ex: Avaliação - Suporte Técnico"
                   value={projectName}
                   onChange={(e) => setProjectName(e.target.value)}
                   required
