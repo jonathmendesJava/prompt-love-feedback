@@ -1,6 +1,7 @@
 import { Question } from "@/types/questions";
 import { Textarea } from "@/components/ui/textarea";
 import { Star } from "lucide-react";
+import FormHeaderPreview from "./FormHeaderPreview";
 import NPSInput from "./form-inputs/NPSInput";
 import CSATInput from "./form-inputs/CSATInput";
 import CESInput from "./form-inputs/CESInput";
@@ -15,9 +16,22 @@ import MatrixInput from "./form-inputs/MatrixInput";
 interface QuestionPreviewProps {
   question: Question;
   index: number;
+  showFormHeader?: boolean;
+  publicTitle?: string;
+  publicDescription?: string;
+  projectName?: string;
+  projectDescription?: string;
 }
 
-export default function QuestionPreview({ question, index }: QuestionPreviewProps) {
+export default function QuestionPreview({ 
+  question, 
+  index,
+  showFormHeader,
+  publicTitle,
+  publicDescription,
+  projectName = "Projeto de Avaliação",
+  projectDescription,
+}: QuestionPreviewProps) {
   const renderInput = () => {
     switch (question.question_type) {
       case "text":
@@ -78,19 +92,30 @@ export default function QuestionPreview({ question, index }: QuestionPreviewProp
   };
 
   return (
-    <div className="space-y-4 p-6 rounded-lg border bg-card">
-      <div className="space-y-2">
-        <p className="text-sm font-medium text-muted-foreground">Pergunta {index + 1}</p>
-        <h3 className="text-lg font-semibold">
-          {question.question_text || "Digite o texto da pergunta..."}
-        </h3>
+    <div className="space-y-4">
+      {showFormHeader && (
+        <FormHeaderPreview
+          publicTitle={publicTitle}
+          publicDescription={publicDescription}
+          projectName={projectName}
+          projectDescription={projectDescription}
+        />
+      )}
+      
+      <div className="space-y-4 p-6 rounded-lg border bg-card">
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-muted-foreground">Pergunta {index + 1}</p>
+          <h3 className="text-lg font-semibold">
+            {question.question_text || "Digite o texto da pergunta..."}
+          </h3>
+        </div>
+        <div className="pt-2">
+          {renderInput()}
+        </div>
+        <p className="text-xs text-muted-foreground italic">
+          💡 Esta é uma pré-visualização de como a pergunta aparecerá no formulário
+        </p>
       </div>
-      <div className="pt-2">
-        {renderInput()}
-      </div>
-      <p className="text-xs text-muted-foreground italic">
-        💡 Esta é uma pré-visualização de como a pergunta aparecerá no formulário
-      </p>
     </div>
   );
 }

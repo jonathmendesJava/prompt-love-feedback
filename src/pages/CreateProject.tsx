@@ -2,11 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { Plus, Trash2, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -36,6 +37,8 @@ export default function CreateProject() {
   const [loading, setLoading] = useState(false);
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
+  const [publicTitle, setPublicTitle] = useState("");
+  const [publicDescription, setPublicDescription] = useState("");
   const [questions, setQuestions] = useState<Question[]>([
     { id: "1", question_text: "", question_type: "text", order_index: 0, scale_config: {} },
   ]);
@@ -76,6 +79,8 @@ export default function CreateProject() {
         .insert({
           name: projectName,
           description: projectDescription,
+          public_title: publicTitle || null,
+          public_description: publicDescription || null,
           user_id: user.id,
         })
         .select()
@@ -152,13 +157,54 @@ export default function CreateProject() {
             <CardHeader>
               <CardTitle>Perguntas</CardTitle>
               <CardDescription>
-                Configure as perguntas do seu formulário
+                Adicione perguntas ao seu formulário
               </CardDescription>
             </CardHeader>
+
             <CardContent className="space-y-6">
+              {/* Public Form Text Section */}
+              <div className="p-4 border rounded-lg bg-muted/50 space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-sm font-semibold">Texto do Formulário Público (Opcional)</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Esses textos aparecerão no formulário que seus clientes preencherão. 
+                    Se deixar vazio, será usado o nome e descrição do projeto.
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="publicTitle">Título Público</Label>
+                  <Input
+                    id="publicTitle"
+                    placeholder="Ex: Avalie nosso atendimento"
+                    value={publicTitle}
+                    onChange={(e) => setPublicTitle(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="publicDescription">Descrição Pública</Label>
+                  <Textarea
+                    id="publicDescription"
+                    placeholder="Ex: Sua opinião é muito importante para melhorarmos nossos serviços"
+                    value={publicDescription}
+                    onChange={(e) => setPublicDescription(e.target.value)}
+                    rows={3}
+                  />
+                </div>
+              </div>
+
+              {/* Questions Preview */}
+              {questions.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-8">
+                  Adicione perguntas ao formulário usando o botão abaixo
+                </p>
+              )}
+
               {questions.map((question, index) => (
-                <div key={question.id} className="grid lg:grid-cols-2 gap-6">
-                  {/* Coluna Esquerda - Configuração */}
+                <div key={question.id} className="space-y-4">
+                  <div className="grid lg:grid-cols-2 gap-6">
+                    {/* Coluna Esquerda - Configuração */}
                   <div className="space-y-4">
                     <Card className="border-2">
                       <CardHeader>
@@ -303,13 +349,25 @@ export default function CreateProject() {
                         <CardDescription>Como a pergunta aparecerá no formulário</CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <QuestionPreview question={question} index={index} />
+                        <QuestionPreview 
+                          question={question} 
+                          index={index}
+                          showFormHeader={index === 0}
+                          publicTitle={publicTitle}
+                          publicDescription={publicDescription}
+                          projectName={projectName}
+                          projectDescription={projectDescription}
+                        />
                       </CardContent>
                     </Card>
                   </div>
                 </div>
+                {index < questions.length - 1 && <Separator className="my-6" />}
+              </div>
               ))}
+            </CardContent>
 
+            <CardFooter>
               <Button
                 type="button"
                 variant="outline"
@@ -319,7 +377,7 @@ export default function CreateProject() {
                 <Plus className="h-4 w-4 mr-2" />
                 Adicionar Pergunta
               </Button>
-            </CardContent>
+            </CardFooter>
           </Card>
 
           <div className="flex justify-end gap-3 mt-6">

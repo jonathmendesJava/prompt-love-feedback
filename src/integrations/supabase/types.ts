@@ -21,6 +21,8 @@ export type Database = {
           id: string
           link_unique: string
           name: string
+          public_description: string | null
+          public_title: string | null
           updated_at: string
           user_id: string
         }
@@ -30,6 +32,8 @@ export type Database = {
           id?: string
           link_unique?: string
           name: string
+          public_description?: string | null
+          public_title?: string | null
           updated_at?: string
           user_id: string
         }
@@ -39,6 +43,8 @@ export type Database = {
           id?: string
           link_unique?: string
           name?: string
+          public_description?: string | null
+          public_title?: string | null
           updated_at?: string
           user_id?: string
         }

@@ -42,21 +42,25 @@ export default function PublicForm() {
 
   const loadForm = async () => {
     try {
-      // Use RPC function to get project data securely
+      // Fetch project data including public form text
       const { data: projectData, error: projectError } = await supabase
-        .rpc("get_project_by_link", { link: linkUnique });
+        .from("projects")
+        .select("id, name, description, public_title, public_description")
+        .eq("link_unique", linkUnique)
+        .single();
 
-      if (projectError || !projectData || projectData.length === 0) {
-        throw new Error("Project not found");
+      if (projectError) throw projectError;
+      if (!projectData) {
+        console.error("Project not found");
+        return;
       }
 
-      const project = projectData[0];
-      setProject(project);
+      setProject(projectData);
 
       const { data: questionsData, error: questionsError } = await supabase
         .from("questions")
         .select("*")
-        .eq("project_id", project.id)
+        .eq("project_id", projectData.id)
         .order("order_index");
 
       if (questionsError) throw questionsError;
@@ -163,10 +167,12 @@ export default function PublicForm() {
               <img src={fiosLogo} alt="FiOS Logo" className="h-10 w-auto" />
               <CardTitle className="text-3xl text-primary">FIOS SayIt</CardTitle>
             </div>
-            <CardTitle className="text-2xl mt-4">{project?.name}</CardTitle>
-            {project?.description && (
+            <CardTitle className="text-2xl mt-4">
+              {(project as any)?.public_title || project?.name}
+            </CardTitle>
+            {((project as any)?.public_description || project?.description) && (
               <CardDescription className="text-base mt-2">
-                {project.description}
+                {(project as any)?.public_description || project?.description}
               </CardDescription>
             )}
           </CardHeader>
