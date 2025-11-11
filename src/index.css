@@ -6,6 +6,14 @@
 All colors MUST be HSL.
 */
 
+@font-face {
+  font-family: 'AmpleSoft';
+  src: url('/fonts/AmpleSoft-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
