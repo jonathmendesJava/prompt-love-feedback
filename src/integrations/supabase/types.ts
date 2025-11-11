@@ -130,6 +130,36 @@ export type Database = {
           },
         ]
       }
+      user_preferences: {
+        Row: {
+          created_at: string
+          data_sharing: boolean
+          email_notifications: boolean
+          id: string
+          updated_at: string
+          user_id: string
+          weekly_reports: boolean
+        }
+        Insert: {
+          created_at?: string
+          data_sharing?: boolean
+          email_notifications?: boolean
+          id?: string
+          updated_at?: string
+          user_id: string
+          weekly_reports?: boolean
+        }
+        Update: {
+          created_at?: string
+          data_sharing?: boolean
+          email_notifications?: boolean
+          id?: string
+          updated_at?: string
+          user_id?: string
+          weekly_reports?: boolean
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

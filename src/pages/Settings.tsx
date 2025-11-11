@@ -2,88 +2,141 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { useTheme } from "next-themes";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Bell, Shield, User } from "lucide-react";
 
 export default function Settings() {
+  const { theme, setTheme } = useTheme();
+  const { preferences, loading, saving, updatePreference } = useUserPreferences();
+
   return (
     <DashboardLayout>
-      <div className="max-w-4xl space-y-6">
+      <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Configurações</h1>
-          <p className="text-muted-foreground mt-2">
-            Gerencie suas preferências do sistema
+          <p className="text-muted-foreground">
+            Gerencie suas preferências e configurações da conta
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-2">
-              <User className="h-5 w-5" />
-              <CardTitle>Perfil</CardTitle>
-            </div>
-            <CardDescription>Configurações da sua conta</CardDescription>
+            <CardTitle>Aparência</CardTitle>
+            <CardDescription>
+              Personalize a aparência da interface
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Modo Escuro</Label>
-                <p className="text-sm text-muted-foreground">
-                  Ativar tema escuro no sistema
-                </p>
-              </div>
-              <Switch />
+              <Label htmlFor="dark-mode" className="flex flex-col space-y-1">
+                <span>Modo Escuro</span>
+                <span className="font-normal text-sm text-muted-foreground">
+                  Alterne entre tema claro e escuro
+                </span>
+              </Label>
+              <Switch
+                id="dark-mode"
+                checked={theme === "dark"}
+                onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+              />
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-2">
-              <Bell className="h-5 w-5" />
-              <CardTitle>Notificações</CardTitle>
-            </div>
-            <CardDescription>Gerencie suas notificações</CardDescription>
+            <CardTitle>Notificações</CardTitle>
+            <CardDescription>
+              Configure como você deseja ser notificado
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Notificações por Email</Label>
-                <p className="text-sm text-muted-foreground">
-                  Receber avisos de novas respostas
-                </p>
-              </div>
-              <Switch defaultChecked />
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Relatórios Semanais</Label>
-                <p className="text-sm text-muted-foreground">
-                  Resumo semanal dos seus projetos
-                </p>
-              </div>
-              <Switch defaultChecked />
-            </div>
+            {loading ? (
+              <>
+                <div className="flex items-center justify-between">
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-[200px]" />
+                    <Skeleton className="h-3 w-[300px]" />
+                  </div>
+                  <Skeleton className="h-6 w-11 rounded-full" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-[200px]" />
+                    <Skeleton className="h-3 w-[300px]" />
+                  </div>
+                  <Skeleton className="h-6 w-11 rounded-full" />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="email-notifications" className="flex flex-col space-y-1">
+                    <span>Notificações por Email</span>
+                    <span className="font-normal text-sm text-muted-foreground">
+                      Receba atualizações importantes por email
+                    </span>
+                  </Label>
+                  <Switch
+                    id="email-notifications"
+                    checked={preferences.email_notifications}
+                    onCheckedChange={(checked) => updatePreference("email_notifications", checked)}
+                    disabled={saving}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="weekly-reports" className="flex flex-col space-y-1">
+                    <span>Relatórios Semanais</span>
+                    <span className="font-normal text-sm text-muted-foreground">
+                      Receba um resumo semanal das suas avaliações
+                    </span>
+                  </Label>
+                  <Switch
+                    id="weekly-reports"
+                    checked={preferences.weekly_reports}
+                    onCheckedChange={(checked) => updatePreference("weekly_reports", checked)}
+                    disabled={saving}
+                  />
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              <CardTitle>Privacidade e Segurança</CardTitle>
-            </div>
-            <CardDescription>Controle seus dados</CardDescription>
+            <CardTitle>Privacidade e Segurança</CardTitle>
+            <CardDescription>
+              Gerencie suas preferências de privacidade
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Compartilhamento de Dados</Label>
-                <p className="text-sm text-muted-foreground">
-                  Permitir análises anônimas
-                </p>
+            {loading ? (
+              <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-[200px]" />
+                  <Skeleton className="h-3 w-[300px]" />
+                </div>
+                <Skeleton className="h-6 w-11 rounded-full" />
               </div>
-              <Switch />
-            </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <Label htmlFor="data-sharing" className="flex flex-col space-y-1">
+                  <span>Compartilhamento de Dados</span>
+                  <span className="font-normal text-sm text-muted-foreground">
+                    Permitir compartilhamento de dados para melhorias
+                  </span>
+                </Label>
+                <Switch
+                  id="data-sharing"
+                  checked={preferences.data_sharing}
+                  onCheckedChange={(checked) => updatePreference("data_sharing", checked)}
+                  disabled={saving}
+                />
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
