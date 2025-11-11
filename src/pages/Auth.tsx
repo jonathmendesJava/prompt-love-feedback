@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import ShaderBackground from "@/components/ui/shader-background";
 
 
 export default function Auth() {
@@ -54,18 +55,15 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4">
-      {/* Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0f] via-[#1a1a2e] to-[#0f0f23]">
-        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-primary/20 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-purple-500/20 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '2s' }} />
-      </div>
+      {/* Shader Background */}
+      <ShaderBackground />
 
       {/* Main Container */}
       <div className="relative w-full max-w-6xl h-[600px] flex items-center justify-center">
-        {/* Glass Container */}
-        <div className="relative w-full max-w-5xl h-full backdrop-blur-xl bg-white/5 rounded-3xl shadow-2xl border border-white/10 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
+        {/* Glass Container with Enhanced Glassmorphism */}
+        <div className="relative w-full max-w-5xl h-full backdrop-blur-2xl bg-white/[0.03] rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] border border-white/[0.18] overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/[0.15] via-white/[0.05] to-transparent" />
+          <div className="absolute inset-0 backdrop-saturate-[1.8]" />
           
           <div className="relative h-full flex">
             {/* Left Side - Info Panel with Slide Animation */}
