@@ -21,6 +21,8 @@ interface ResponseDetail {
   question_type: string;
   response_text: string | null;
   response_value: number | null;
+  response_data: any;
+  scale_config?: any;
 }
 
 export default function ProjectDashboard() {
@@ -108,9 +110,11 @@ export default function ProjectDashboard() {
           id,
           response_text,
           response_value,
+          response_data,
           questions (
             question_text,
             question_type,
+            scale_config,
             order_index
           )
         `)
@@ -125,6 +129,8 @@ export default function ProjectDashboard() {
         question_type: r.questions?.question_type || "text",
         response_text: r.response_text,
         response_value: r.response_value,
+        response_data: r.response_data,
+        scale_config: r.questions?.scale_config,
       }));
 
       setSessionResponses(formatted);
