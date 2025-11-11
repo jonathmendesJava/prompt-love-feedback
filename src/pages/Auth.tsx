@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import fiosLogo from "@/assets/fios-logo.png";
+
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -75,8 +75,7 @@ export default function Auth() {
               }`}
             >
               <div>
-                <div className="flex items-center gap-4 mb-8">
-                  <img src={fiosLogo} alt="FiOS Logo" className="h-16 w-auto" />
+                <div className="mb-8">
                   <h1 className="text-4xl font-bold text-white">FiOS | CTA</h1>
                 </div>
                 <h2 className="text-3xl font-bold text-white mb-4">
@@ -99,8 +98,7 @@ export default function Auth() {
               }`}
             >
               <div>
-                <div className="flex items-center gap-4 mb-8">
-                  <img src={fiosLogo} alt="FiOS Logo" className="h-16 w-auto" />
+                <div className="mb-8">
                   <h1 className="text-4xl font-bold text-white">FiOS | CTA</h1>
                 </div>
                 <h2 className="text-3xl font-bold text-white mb-4">
