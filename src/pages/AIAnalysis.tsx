@@ -90,7 +90,20 @@ export default function AIAnalysis() {
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
+    
+    // Use setTimeout to ensure click is processed before removing
+    setTimeout(() => {
+      try {
+        // Check if link is still in DOM before removing
+        if (link.parentNode) {
+          document.body.removeChild(link);
+        }
+      } catch (error) {
+        console.error('Erro ao remover elemento:', error);
+      }
+      // Clean up blob URL
+      URL.revokeObjectURL(url);
+    }, 100);
     
     toast.success("Relatório exportado com sucesso!");
   };
