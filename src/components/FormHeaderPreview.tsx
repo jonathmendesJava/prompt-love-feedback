@@ -28,10 +28,10 @@ export default function FormHeaderPreview({
 
   return (
     <Card className="mb-6 relative">
-      {/* Marca d'água Fios DizAí - Superior Esquerdo */}
+      {/* Marca d'água FiOS DizAí - Superior Esquerdo */}
       <div className="absolute top-4 left-4 flex items-center gap-2 opacity-60 z-10">
         <img src={fiosLogo} alt="FiOS" className="h-6 w-auto" />
-        <span className="text-xs font-medium text-muted-foreground">Fios DizAí</span>
+        <span className="text-xs font-medium text-muted-foreground">FiOS DizAí</span>
       </div>
 
       <CardHeader className="text-center pt-12">
