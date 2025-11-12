@@ -106,7 +106,7 @@ export default function Auth() {
                 </p>
               </div>
                 <div className="text-white/50 text-sm">
-                www.fiosdizai.com
+                dizai.fios.com.br
               </div>
             </div>
 
@@ -129,7 +129,7 @@ export default function Auth() {
                 </p>
               </div>
               <div className="text-white/50 text-sm">
-                www.fiosdizai.com
+                dizai.fios.com.br
               </div>
             </div>
 
