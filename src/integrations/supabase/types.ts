@@ -92,6 +92,13 @@ export type Database = {
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "questions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects_with_counts"
+            referencedColumns: ["id"]
+          },
         ]
       }
       responses: {
@@ -131,6 +138,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "responses_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects_with_counts"
             referencedColumns: ["id"]
           },
           {
@@ -174,7 +188,29 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      dashboard_stats: {
+        Row: {
+          average_rating: number | null
+          total_projects: number | null
+          total_responses: number | null
+        }
+        Relationships: []
+      }
+      projects_with_counts: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string | null
+          link_unique: string | null
+          name: string | null
+          public_description: string | null
+          public_title: string | null
+          response_count: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_project_by_link: {
