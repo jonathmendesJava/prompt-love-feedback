@@ -245,7 +245,7 @@ export default function ProjectDashboard() {
                               )}
                             >
                               <MessageSquare className="h-4 w-4 mr-2" />
-                              Abrir Chatwoot
+                              Abrir ChatLink
                             </Button>
                           )}
                           <Button
