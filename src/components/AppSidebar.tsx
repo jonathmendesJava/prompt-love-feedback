@@ -40,7 +40,7 @@ export function AppSidebar() {
             <div className="flex items-center gap-3">
               <img src={fiosLogo} alt="FiOS Logo" className="h-8 w-auto" />
               <h2 className="text-xl font-bold text-sidebar-primary">
-                Fios DizAí
+                FiOS DizAí
               </h2>
             </div>
           ) : (
