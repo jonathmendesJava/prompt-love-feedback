@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      n8n_conversations: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          data: Json
+          id: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          data?: Json
+          id?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
           client_brand_name: string | null
