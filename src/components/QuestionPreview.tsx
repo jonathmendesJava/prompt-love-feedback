@@ -21,6 +21,8 @@ interface QuestionPreviewProps {
   publicDescription?: string;
   projectName?: string;
   projectDescription?: string;
+  clientBrandName?: string;
+  clientLogoUrl?: string;
 }
 
 export default function QuestionPreview({ 
@@ -31,6 +33,8 @@ export default function QuestionPreview({
   publicDescription,
   projectName = "Projeto de Avaliação",
   projectDescription,
+  clientBrandName,
+  clientLogoUrl,
 }: QuestionPreviewProps) {
   const renderInput = () => {
     switch (question.question_type) {
@@ -99,6 +103,8 @@ export default function QuestionPreview({
           publicDescription={publicDescription}
           projectName={projectName}
           projectDescription={projectDescription}
+          clientBrandName={clientBrandName}
+          clientLogoUrl={clientLogoUrl}
         />
       )}
       

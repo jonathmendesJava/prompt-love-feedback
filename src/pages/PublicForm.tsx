@@ -42,10 +42,10 @@ export default function PublicForm() {
 
   const loadForm = async () => {
     try {
-      // Fetch project data including public form text
+      // Fetch project data including public form text and client branding
       const { data: projectData, error: projectError } = await supabase
         .from("projects")
-        .select("id, name, description, public_title, public_description")
+        .select("id, name, description, public_title, public_description, client_brand_name, client_logo_url")
         .eq("link_unique", linkUnique)
         .single();
 
@@ -161,13 +161,35 @@ export default function PublicForm() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary p-4 py-12">
       <div className="max-w-2xl mx-auto">
-        <Card className="shadow-xl">
-          <CardHeader className="text-center">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <img src={fiosLogo} alt="FiOS Logo" className="h-10 w-auto" />
-              <CardTitle className="text-3xl text-primary">Fios DizAí</CardTitle>
-            </div>
-            <CardTitle className="text-2xl mt-4">
+        <Card className="shadow-xl relative">
+          {/* Marca d'água Fios DizAí - Superior Esquerdo */}
+          <div className="absolute top-4 left-4 flex items-center gap-2 opacity-60 z-10">
+            <img src={fiosLogo} alt="FiOS" className="h-6 w-auto" />
+            <span className="text-xs font-medium text-muted-foreground">Fios DizAí</span>
+          </div>
+
+          <CardHeader className="text-center pt-12">
+            {/* Logo e Nome do Cliente - Centro */}
+            {((project as any)?.client_logo_url || (project as any)?.client_brand_name) && (
+              <div className="flex flex-col items-center gap-3 mb-6">
+                {(project as any)?.client_logo_url && (
+                  <img 
+                    src={(project as any).client_logo_url} 
+                    alt="Logo" 
+                    className="h-16 w-auto max-w-xs object-contain"
+                    onError={(e) => e.currentTarget.style.display = 'none'}
+                  />
+                )}
+                {(project as any)?.client_brand_name && (
+                  <CardTitle className="text-3xl text-primary">
+                    {(project as any).client_brand_name}
+                  </CardTitle>
+                )}
+              </div>
+            )}
+
+            {/* Título e Descrição */}
+            <CardTitle className="text-2xl mt-2">
               {(project as any)?.public_title || project?.name}
             </CardTitle>
             {((project as any)?.public_description || project?.description) && (

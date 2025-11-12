@@ -16,6 +16,8 @@ export type Database = {
     Tables: {
       projects: {
         Row: {
+          client_brand_name: string | null
+          client_logo_url: string | null
           created_at: string
           description: string | null
           id: string
@@ -27,6 +29,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          client_brand_name?: string | null
+          client_logo_url?: string | null
           created_at?: string
           description?: string | null
           id?: string
@@ -38,6 +42,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          client_brand_name?: string | null
+          client_logo_url?: string | null
           created_at?: string
           description?: string | null
           id?: string

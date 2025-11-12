@@ -39,6 +39,8 @@ export default function CreateProject() {
   const [projectDescription, setProjectDescription] = useState("");
   const [publicTitle, setPublicTitle] = useState("");
   const [publicDescription, setPublicDescription] = useState("");
+  const [clientBrandName, setClientBrandName] = useState("");
+  const [clientLogoUrl, setClientLogoUrl] = useState("");
   const [questions, setQuestions] = useState<Question[]>([
     { id: "1", question_text: "", question_type: "text", order_index: 0, scale_config: {} },
   ]);
@@ -81,6 +83,8 @@ export default function CreateProject() {
           description: projectDescription,
           public_title: publicTitle || null,
           public_description: publicDescription || null,
+          client_brand_name: clientBrandName || null,
+          client_logo_url: clientLogoUrl || null,
           user_id: user.id,
         })
         .select()
@@ -165,25 +169,69 @@ export default function CreateProject() {
               {/* Public Form Text Section */}
               <div className="p-4 border rounded-lg bg-muted/50 space-y-4">
                 <div className="space-y-2">
-                  <h3 className="text-sm font-semibold">Texto do Formulário Público (Opcional)</h3>
+                  <h3 className="text-sm font-semibold">Personalização do Formulário Público</h3>
                   <p className="text-xs text-muted-foreground">
-                    Esses textos aparecerão no formulário que seus clientes preencherão. 
-                    Se deixar vazio, será usado o nome e descrição do projeto.
+                    Configure como o formulário aparecerá para seus clientes
                   </p>
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="clientBrandName">Nome da Marca do Cliente</Label>
+                  <Input
+                    id="clientBrandName"
+                    placeholder="Ex: Minha Empresa Ltda"
+                    value={clientBrandName}
+                    onChange={(e) => setClientBrandName(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Este nome será exibido em destaque no cabeçalho do formulário
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="clientLogoUrl">URL da Logo do Cliente</Label>
+                  <Input
+                    id="clientLogoUrl"
+                    type="url"
+                    placeholder="https://exemplo.com/logo.png"
+                    value={clientLogoUrl}
+                    onChange={(e) => setClientLogoUrl(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Logo que aparecerá no cabeçalho. Recomendado: formato PNG/SVG com fundo transparente
+                  </p>
+                  {clientLogoUrl && (
+                    <div className="mt-2 p-4 border rounded-lg bg-background/50">
+                      <p className="text-xs font-medium mb-2">Preview da Logo:</p>
+                      <img 
+                        src={clientLogoUrl} 
+                        alt="Preview" 
+                        className="h-12 w-auto mx-auto"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <Separator />
                 
                 <div className="space-y-2">
-                  <Label htmlFor="publicTitle">Título Público</Label>
+                  <Label htmlFor="publicTitle">Título do Formulário</Label>
                   <Input
                     id="publicTitle"
                     placeholder="Ex: Avalie nosso atendimento"
                     value={publicTitle}
                     onChange={(e) => setPublicTitle(e.target.value)}
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Se deixar vazio, será usado o nome do projeto
+                  </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="publicDescription">Descrição Pública</Label>
+                  <Label htmlFor="publicDescription">Descrição do Formulário</Label>
                   <Textarea
                     id="publicDescription"
                     placeholder="Ex: Sua opinião é muito importante para melhorarmos nossos serviços"
@@ -191,6 +239,9 @@ export default function CreateProject() {
                     onChange={(e) => setPublicDescription(e.target.value)}
                     rows={3}
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Se deixar vazio, será usado a descrição do projeto
+                  </p>
                 </div>
               </div>
 
@@ -357,6 +408,8 @@ export default function CreateProject() {
                           publicDescription={publicDescription}
                           projectName={projectName}
                           projectDescription={projectDescription}
+                          clientBrandName={clientBrandName}
+                          clientLogoUrl={clientLogoUrl}
                         />
                       </CardContent>
                     </Card>
