@@ -1,7 +1,9 @@
 import { Home, Settings, Plus, FolderOpen, Kanban as KanbanIcon, Sparkles } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
-import fiosLogo from "@/assets/fios-logo.png";
+import { useTheme } from "next-themes";
+import fiosLogoLight from "@/assets/fios-logo-light.png";
+import fiosLogoDark from "@/assets/fios-logo-dark.png";
 import {
   Sidebar,
   SidebarContent,
@@ -26,6 +28,9 @@ const menuItems = [
 export function AppSidebar() {
   const { open } = useSidebar();
   const location = useLocation();
+  const { theme } = useTheme();
+  
+  const fiosLogo = theme === "dark" ? fiosLogoDark : fiosLogoLight;
 
   return (
     <Sidebar collapsible="icon">

@@ -1,5 +1,7 @@
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import fiosLogo from "@/assets/fios-logo-public.png";
+import { useTheme } from "next-themes";
+import fiosLogoLight from "@/assets/fios-logo-light.png";
+import fiosLogoDark from "@/assets/fios-logo-dark.png";
 
 interface FormHeaderPreviewProps {
   publicTitle?: string;
@@ -18,8 +20,11 @@ export default function FormHeaderPreview({
   clientBrandName,
   clientLogoUrl,
 }: FormHeaderPreviewProps) {
+  const { theme } = useTheme();
   const displayTitle = publicTitle || projectName;
   const displayDescription = publicDescription || projectDescription;
+  
+  const fiosLogo = theme === "dark" ? fiosLogoDark : fiosLogoLight;
 
   return (
     <Card className="mb-6 relative">
