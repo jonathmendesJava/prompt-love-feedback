@@ -95,7 +95,7 @@ export default function Auth() {
             >
               <div>
                 <div className="mb-8">
-                  <h1 className="text-4xl font-bold text-white">Fios DizAí</h1>
+                  <h1 className="text-4xl font-bold text-white">FiOS DizAí</h1>
                 </div>
                 <h2 className="text-3xl font-bold text-white mb-4">
                   Sistema de Avaliação
@@ -118,7 +118,7 @@ export default function Auth() {
             >
               <div>
                 <div className="mb-8">
-                  <h1 className="text-4xl font-bold text-white">Fios DizAí</h1>
+                  <h1 className="text-4xl font-bold text-white">FiOS DizAí</h1>
                 </div>
                 <h2 className="text-3xl font-bold text-white mb-4">
                   Bem-vindo!
