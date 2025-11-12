@@ -1,4 +1,5 @@
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +11,17 @@ import { useProjects } from "@/hooks/useProjects";
 
 export default function Projects() {
   const navigate = useNavigate();
-  const { data: projects, isLoading, deleteProject } = useProjects();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { data: projects, isLoading, deleteProject, refetch } = useProjects();
+  
+  // Forçar refresh quando vindo da criação de projeto
+  useEffect(() => {
+    if (searchParams.get('refresh') === 'true') {
+      refetch();
+      // Remover o parâmetro da URL
+      setSearchParams({});
+    }
+  }, [searchParams, refetch, setSearchParams]);
 
   const copyLink = (linkUnique: string) => {
     const url = `${window.location.origin}/form/${linkUnique}`;

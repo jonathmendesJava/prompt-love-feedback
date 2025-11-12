@@ -146,9 +146,9 @@ export default function CreateProject() {
       
       toast.success("Projeto criado com sucesso!");
       
-      // Aguardar um pouco antes de navegar para garantir que o toast seja visto
+      // Aguardar um pouco antes de navegar com flag para forçar refresh
       setTimeout(() => {
-        navigate("/projects", { replace: true });
+        navigate("/projects?refresh=true", { replace: true });
       }, 500);
     } catch (error: any) {
       console.error("Erro completo:", error);

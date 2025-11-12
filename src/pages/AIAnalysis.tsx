@@ -4,11 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import AnalyticsDashboard from "@/components/ui/analytics-dashboard";
 import { Sparkles, TrendingUp, AlertTriangle, ThumbsUp, Lightbulb, Download, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
+import { useProjects } from "@/hooks/useProjects";
 import { useNavigate } from "react-router-dom";
 
 interface AnalysisResult {
@@ -27,7 +30,9 @@ interface AnalysisResult {
 export default function AIAnalysis() {
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState<string>("all");
   const { preferences, loading: prefsLoading } = useUserPreferences();
+  const { data: projects, isLoading: projectsLoading } = useProjects();
   const navigate = useNavigate();
 
   const exportToCSV = () => {
@@ -134,7 +139,8 @@ export default function AIAnalysis() {
       const { data, error } = await supabase.functions.invoke('analyze-responses', {
         headers: {
           Authorization: `Bearer ${session.access_token}`
-        }
+        },
+        body: selectedProjectId !== "all" ? { projectId: selectedProjectId } : {}
       });
 
       if (error) {
@@ -283,6 +289,42 @@ export default function AIAnalysis() {
             </Button>
           </div>
         </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Selecionar Projeto para Análise</CardTitle>
+            <CardDescription>
+              Escolha analisar todos os projetos ou um projeto específico
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Label htmlFor="project-select">Projeto</Label>
+              <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
+                <SelectTrigger id="project-select">
+                  <SelectValue placeholder="Selecione um projeto" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">📊 Todos os Projetos</SelectItem>
+                  {projectsLoading ? (
+                    <SelectItem value="loading" disabled>Carregando...</SelectItem>
+                  ) : (
+                    projects?.map((project) => (
+                      <SelectItem key={project.id} value={project.id}>
+                        {project.name}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                {selectedProjectId === "all" 
+                  ? "A análise será feita com base em todas as respostas de todos os seus projetos"
+                  : "A análise será feita apenas com respostas deste projeto"}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
         {loading && (
           <div className="space-y-6">

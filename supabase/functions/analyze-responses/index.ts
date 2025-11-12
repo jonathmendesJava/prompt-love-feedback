@@ -32,6 +32,16 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
+    // Get optional project filter from request body
+    let projectId: string | null = null;
+    try {
+      const body = await req.json();
+      projectId = body.projectId || null;
+      console.log('Project filter:', projectId || 'all projects');
+    } catch {
+      console.log('No request body, analyzing all projects');
+    }
+
     console.log('Fetching user preferences and responses for user:', user.id);
 
     // Fetch user's OpenAI API key
@@ -58,8 +68,8 @@ serve(async (req) => {
     const OPENAI_API_KEY = preferences.openai_api_key;
     console.log('OpenAI token configured, fetching responses...');
 
-    // Fetch all responses from user's projects
-    const { data: responses, error: responsesError } = await supabase
+    // Fetch responses from user's projects with optional project filter
+    let query = supabase
       .from('responses')
       .select(`
         id,
@@ -71,7 +81,14 @@ serve(async (req) => {
         projects!inner(user_id, name),
         questions(question_text, question_type)
       `)
-      .eq('projects.user_id', user.id)
+      .eq('projects.user_id', user.id);
+    
+    // Add project filter if specified
+    if (projectId) {
+      query = query.eq('project_id', projectId);
+    }
+    
+    const { data: responses, error: responsesError } = await query
       .order('submitted_at', { ascending: false })
       .limit(500);
 
