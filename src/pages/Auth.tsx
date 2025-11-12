@@ -17,6 +17,12 @@ export default function Auth() {
 
   // Check if user is already authenticated
   useEffect(() => {
+    console.log('Auth page loaded with:', {
+      origin: window.location.origin,
+      protocol: window.location.protocol,
+      href: window.location.href
+    });
+    
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
@@ -30,16 +36,23 @@ export default function Auth() {
     e.preventDefault();
     setLoading(true);
 
+    console.log('Tentando signup com redirect para:', `${window.location.origin}/dashboard`);
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/`
+        emailRedirectTo: `${window.location.origin}/dashboard`
       }
     });
 
     if (error) {
-      toast.error(error.message);
+      console.error("Erro detalhado no signup:", {
+        message: error.message,
+        status: error.status,
+        name: error.name
+      });
+      toast.error(`Erro ao criar conta: ${error.message}`);
       setLoading(false);
     } else {
       toast.success("Conta criada com sucesso!");
@@ -56,15 +69,23 @@ export default function Auth() {
     e.preventDefault();
     setLoading(true);
 
+    console.log('Tentando login...');
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) {
-      toast.error(error.message);
+      console.error("Erro detalhado no login:", {
+        message: error.message,
+        status: error.status,
+        name: error.name
+      });
+      toast.error(`Erro ao fazer login: ${error.message}`);
       setLoading(false);
     } else {
+      toast.success("Login realizado com sucesso!");
       // Verify session before navigating
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
