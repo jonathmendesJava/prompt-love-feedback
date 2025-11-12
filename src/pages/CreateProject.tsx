@@ -119,18 +119,18 @@ export default function CreateProject() {
     <DashboardLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Criar Projeto</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Criar Novo Projeto</h1>
           <p className="text-muted-foreground mt-2">
-            Configure um novo formulário de avaliação
+            Configure seu formulário de avaliação personalizado. Adicione perguntas, personalize a aparência e compartilhe com seus clientes.
           </p>
         </div>
 
         <form onSubmit={handleSubmit}>
           <Card>
             <CardHeader>
-              <CardTitle>Informações do Projeto</CardTitle>
+              <CardTitle>Informações Básicas</CardTitle>
               <CardDescription>
-                Defina o nome e descrição do seu projeto
+                Identificação interna do projeto. Essas informações são visíveis apenas para você no painel administrativo.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -138,30 +138,36 @@ export default function CreateProject() {
                 <Label htmlFor="name">Nome do Projeto *</Label>
                 <Input
                   id="name"
-                  placeholder="Ex: Avaliação - Suporte Técnico"
+                  placeholder="Ex: Avaliação de Atendimento - Suporte Q1 2025"
                   value={projectName}
                   onChange={(e) => setProjectName(e.target.value)}
                   required
                 />
+                <p className="text-xs text-muted-foreground">
+                  Use um nome descritivo para identificar facilmente este projeto no seu painel
+                </p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="description">Descrição</Label>
+                <Label htmlFor="description">Descrição Interna (Opcional)</Label>
                 <Textarea
                   id="description"
-                  placeholder="Breve descrição do projeto..."
+                  placeholder="Ex: Formulário para avaliar a qualidade do atendimento do suporte técnico após cada chamado..."
                   value={projectDescription}
                   onChange={(e) => setProjectDescription(e.target.value)}
                   rows={3}
                 />
+                <p className="text-xs text-muted-foreground">
+                  Notas ou contexto sobre este projeto, visível apenas para você
+                </p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="mt-6">
             <CardHeader>
-              <CardTitle>Perguntas</CardTitle>
+              <CardTitle>Formulário de Avaliação</CardTitle>
               <CardDescription>
-                Adicione perguntas ao seu formulário
+                Configure a aparência pública do formulário e adicione as perguntas que seus clientes responderão
               </CardDescription>
             </CardHeader>
 
@@ -169,40 +175,40 @@ export default function CreateProject() {
               {/* Public Form Text Section */}
               <div className="p-4 border rounded-lg bg-muted/50 space-y-4">
                 <div className="space-y-2">
-                  <h3 className="text-sm font-semibold">Personalização do Formulário Público</h3>
+                  <h3 className="text-sm font-semibold">🎨 Personalização Visual</h3>
                   <p className="text-xs text-muted-foreground">
-                    Configure como o formulário aparecerá para seus clientes
+                    Personalize como o formulário será exibido para seus clientes quando acessarem o link público
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="clientBrandName">Nome da Marca do Cliente</Label>
+                  <Label htmlFor="clientBrandName">Nome da Marca (Opcional)</Label>
                   <Input
                     id="clientBrandName"
-                    placeholder="Ex: Minha Empresa Ltda"
+                    placeholder="Ex: Tech Solutions LTDA"
                     value={clientBrandName}
                     onChange={(e) => setClientBrandName(e.target.value)}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Este nome será exibido em destaque no cabeçalho do formulário
+                    Aparecerá no topo do formulário junto com a logo. Deixe vazio para não exibir.
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="clientLogoUrl">URL da Logo do Cliente</Label>
+                  <Label htmlFor="clientLogoUrl">URL da Logo (Opcional)</Label>
                   <Input
                     id="clientLogoUrl"
                     type="url"
-                    placeholder="https://exemplo.com/logo.png"
+                    placeholder="https://seusite.com/logo.png"
                     value={clientLogoUrl}
                     onChange={(e) => setClientLogoUrl(e.target.value)}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Logo que aparecerá no cabeçalho. Recomendado: formato PNG/SVG com fundo transparente
+                    Logo exibida no cabeçalho do formulário. Dica: use PNG/SVG com fundo transparente
                   </p>
                   {clientLogoUrl && (
                     <div className="mt-2 p-4 border rounded-lg bg-background/50">
-                      <p className="text-xs font-medium mb-2">Preview da Logo:</p>
+                      <p className="text-xs font-medium mb-2">✓ Preview da Logo:</p>
                       <img 
                         src={clientLogoUrl} 
                         alt="Preview" 
@@ -218,37 +224,46 @@ export default function CreateProject() {
                 <Separator />
                 
                 <div className="space-y-2">
-                  <Label htmlFor="publicTitle">Título do Formulário</Label>
+                  <Label htmlFor="publicTitle">Título do Formulário (Opcional)</Label>
                   <Input
                     id="publicTitle"
-                    placeholder="Ex: Avalie nosso atendimento"
+                    placeholder="Ex: Como foi sua experiência com nosso atendimento?"
                     value={publicTitle}
                     onChange={(e) => setPublicTitle(e.target.value)}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Se deixar vazio, será usado o nome do projeto
+                    Título principal que aparece no formulário público. Se vazio, usa o nome do projeto.
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="publicDescription">Descrição do Formulário</Label>
+                  <Label htmlFor="publicDescription">Mensagem de Boas-Vindas (Opcional)</Label>
                   <Textarea
                     id="publicDescription"
-                    placeholder="Ex: Sua opinião é muito importante para melhorarmos nossos serviços"
+                    placeholder="Ex: Sua opinião é muito importante! Responda às perguntas abaixo para nos ajudar a melhorar nossos serviços."
                     value={publicDescription}
                     onChange={(e) => setPublicDescription(e.target.value)}
                     rows={3}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Se deixar vazio, será usado a descrição do projeto
+                    Texto de introdução exibido antes das perguntas. Se vazio, usa a descrição do projeto.
                   </p>
                 </div>
               </div>
 
-              {/* Questions Preview */}
+              {/* Questions Section */}
+              <Separator className="my-6" />
+              
+              <div className="space-y-2 mb-4">
+                <h3 className="text-sm font-semibold">📝 Perguntas do Formulário</h3>
+                <p className="text-xs text-muted-foreground">
+                  Adicione quantas perguntas precisar. Use diferentes tipos para coletar avaliações, escolhas ou comentários dos seus clientes.
+                </p>
+              </div>
+
               {questions.length === 0 && (
                 <p className="text-sm text-muted-foreground text-center py-8">
-                  Adicione perguntas ao formulário usando o botão abaixo
+                  Nenhuma pergunta adicionada ainda. Clique no botão "Adicionar Pergunta" abaixo para começar.
                 </p>
               )}
 
@@ -262,7 +277,7 @@ export default function CreateProject() {
                         <div className="flex justify-between items-center">
                           <div>
                             <CardTitle className="text-lg">Pergunta {index + 1}</CardTitle>
-                            <CardDescription>Configure os detalhes da pergunta</CardDescription>
+                            <CardDescription>Defina o texto e o tipo de resposta esperada</CardDescription>
                           </div>
                           {questions.length > 1 && (
                             <Button
@@ -281,7 +296,7 @@ export default function CreateProject() {
                           <Label htmlFor={`question-${question.id}`}>Texto da Pergunta *</Label>
                           <Textarea
                             id={`question-${question.id}`}
-                            placeholder="Digite a pergunta..."
+                            placeholder="Ex: Como você avalia a qualidade do nosso atendimento?"
                             value={question.question_text}
                             onChange={(e) =>
                               updateQuestion(question.id, "question_text", e.target.value)
@@ -289,6 +304,9 @@ export default function CreateProject() {
                             required
                             rows={3}
                           />
+                          <p className="text-xs text-muted-foreground">
+                            Seja claro e objetivo. Esta é a pergunta que seu cliente verá no formulário.
+                          </p>
                         </div>
 
                         <div className="space-y-2">
@@ -303,20 +321,23 @@ export default function CreateProject() {
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="text">📝 Texto Aberto</SelectItem>
-                              <SelectItem value="nps">📊 NPS (0-10)</SelectItem>
-                              <SelectItem value="csat">😊 CSAT (Satisfação)</SelectItem>
-                              <SelectItem value="ces">⚡ CES (Esforço)</SelectItem>
-                              <SelectItem value="stars">⭐ Estrelas</SelectItem>
-                              <SelectItem value="emojis">😄 Emojis</SelectItem>
-                              <SelectItem value="hearts">❤️ Corações</SelectItem>
-                              <SelectItem value="single_choice">◉ Escolha Única</SelectItem>
-                              <SelectItem value="multiple_choice">☑ Múltipla Escolha</SelectItem>
-                              <SelectItem value="like_dislike">👍 Like/Dislike</SelectItem>
-                              <SelectItem value="likert">📏 Escala Likert</SelectItem>
-                              <SelectItem value="matrix">⊞ Matriz</SelectItem>
+                              <SelectItem value="text">📝 Texto Aberto - Resposta livre do cliente</SelectItem>
+                              <SelectItem value="nps">📊 NPS (0-10) - Net Promoter Score padrão</SelectItem>
+                              <SelectItem value="csat">😊 CSAT - Customer Satisfaction (Muito Insatisfeito a Muito Satisfeito)</SelectItem>
+                              <SelectItem value="ces">⚡ CES - Customer Effort Score (esforço necessário)</SelectItem>
+                              <SelectItem value="stars">⭐ Estrelas - Avaliação de 1 a 5 estrelas</SelectItem>
+                              <SelectItem value="emojis">😄 Emojis - Avaliação visual com emojis</SelectItem>
+                              <SelectItem value="hearts">❤️ Corações - Avaliação com corações</SelectItem>
+                              <SelectItem value="single_choice">◉ Escolha Única - Cliente escolhe apenas uma opção</SelectItem>
+                              <SelectItem value="multiple_choice">☑ Múltipla Escolha - Cliente pode escolher várias opções</SelectItem>
+                              <SelectItem value="like_dislike">👍 Like/Dislike - Gostou ou não gostou</SelectItem>
+                              <SelectItem value="likert">📏 Escala Likert - Concordo totalmente a Discordo totalmente</SelectItem>
+                              <SelectItem value="matrix">⊞ Matriz - Múltiplos itens com mesma escala de avaliação</SelectItem>
                             </SelectContent>
                           </Select>
+                          <p className="text-xs text-muted-foreground">
+                            Escolha o formato que melhor se adapta ao tipo de feedback que você quer coletar
+                          </p>
                         </div>
 
                         {/* Configurações específicas por tipo */}
@@ -396,8 +417,8 @@ export default function CreateProject() {
                   <div className="lg:sticky lg:top-6 lg:self-start">
                     <Card className="bg-muted/30">
                       <CardHeader>
-                        <CardTitle className="text-lg">👁️ Pré-visualização</CardTitle>
-                        <CardDescription>Como a pergunta aparecerá no formulário</CardDescription>
+                        <CardTitle className="text-lg">👁️ Pré-visualização em Tempo Real</CardTitle>
+                        <CardDescription>Veja exatamente como esta pergunta aparecerá para seus clientes</CardDescription>
                       </CardHeader>
                       <CardContent>
                         <QuestionPreview 
