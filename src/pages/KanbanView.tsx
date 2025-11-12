@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Kanban, CardType } from "@/components/ui/kanban";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -12,80 +11,20 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useKanbanCards } from "@/hooks/useKanbanCards";
 
 export default function KanbanView() {
-  const [cards, setCards] = useState<CardType[]>([]);
+  const { data: fetchedCards = [], isLoading, error } = useKanbanCards();
+  const [localCards, setLocalCards] = useState<CardType[]>([]);
   const [selectedCard, setSelectedCard] = useState<CardType | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
 
+  // Sync fetched cards to local state
   useEffect(() => {
-    loadResponses();
-  }, []);
-
-  const loadResponses = async () => {
-    try {
-      setLoading(true);
-      
-      // Buscar todas as respostas com informações do projeto
-      const { data: responses, error } = await supabase
-        .from("responses")
-        .select(`
-          id,
-          session_id,
-          submitted_at,
-          response_data,
-          response_text,
-          response_value,
-          project_id,
-          question_id,
-          projects (
-            id,
-            name
-          ),
-          questions (
-            question_text,
-            question_type
-          )
-        `)
-        .order("submitted_at", { ascending: false });
-
-      if (error) throw error;
-
-      // Agrupar respostas por session_id
-      const sessionMap = new Map<string, any>();
-      
-      responses?.forEach((response: any) => {
-        if (!sessionMap.has(response.session_id)) {
-          sessionMap.set(response.session_id, {
-            id: response.session_id,
-            column: "novo" as const,
-            projectName: response.projects?.name || "Projeto Desconhecido",
-            projectId: response.project_id,
-            submittedAt: response.submitted_at,
-            sessionId: response.session_id,
-            responseData: [],
-          });
-        }
-        
-        sessionMap.get(response.session_id)?.responseData.push({
-          question: response.questions?.question_text,
-          questionType: response.questions?.question_type,
-          value: response.response_value,
-          text: response.response_text,
-          data: response.response_data,
-        });
-      });
-
-      const cardsData = Array.from(sessionMap.values());
-      setCards(cardsData);
-    } catch (error) {
-      console.error("Erro ao carregar respostas:", error);
-      toast.error("Erro ao carregar respostas");
-    } finally {
-      setLoading(false);
+    if (fetchedCards.length > 0) {
+      setLocalCards(fetchedCards);
     }
-  };
+  }, [fetchedCards]);
 
   const handleCardClick = (card: CardType) => {
     setSelectedCard(card);
@@ -128,15 +67,28 @@ export default function KanbanView() {
           </p>
         </div>
 
-        {loading ? (
+        {isLoading ? (
+          <div className="space-y-4">
+            <div className="flex gap-4 overflow-x-auto pb-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="flex-shrink-0 w-64 space-y-3">
+                  <Skeleton className="h-6 w-24" />
+                  <Skeleton className="h-32 w-full" />
+                  <Skeleton className="h-32 w-full" />
+                  <Skeleton className="h-24 w-full" />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : error ? (
           <div className="flex items-center justify-center h-96">
-            <p className="text-muted-foreground">Carregando respostas...</p>
+            <p className="text-destructive">Erro ao carregar respostas</p>
           </div>
         ) : (
           <div className="h-[calc(100vh-12rem)] border rounded-lg bg-card">
             <Kanban
-              cards={cards}
-              setCards={setCards}
+              cards={localCards.length > 0 ? localCards : fetchedCards}
+              setCards={setLocalCards}
               onCardClick={handleCardClick}
             />
           </div>
@@ -190,15 +142,19 @@ export default function KanbanView() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {selectedCard.responseData?.map(
+                     {selectedCard.responseData?.map(
                       (response: any, index: number) => (
                         <div key={index}>
                           <div className="space-y-1">
                             <p className="text-sm font-medium">
-                              {response.question}
+                              {response.question_text}
                             </p>
                             <p className="text-base text-muted-foreground">
-                              {renderResponseValue(response)}
+                              {renderResponseValue({
+                                value: response.response_value,
+                                text: response.response_text,
+                                data: response.response_data
+                              })}
                             </p>
                           </div>
                           {index < selectedCard.responseData.length - 1 && (

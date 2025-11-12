@@ -1,58 +1,16 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Eye, Copy, Trash2, Plus } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-
-interface Project {
-  id: string;
-  name: string;
-  description: string;
-  link_unique: string;
-  created_at: string;
-  response_count?: number;
-}
+import { useProjects } from "@/hooks/useProjects";
 
 export default function Projects() {
   const navigate = useNavigate();
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadProjects();
-  }, []);
-
-  const loadProjects = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("projects")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-
-      const projectsWithCounts = await Promise.all(
-        (data || []).map(async (project) => {
-          const { count } = await supabase
-            .from("responses")
-            .select("*", { count: "exact", head: true })
-            .eq("project_id", project.id);
-
-          return { ...project, response_count: count || 0 };
-        })
-      );
-
-      setProjects(projectsWithCounts);
-    } catch (error: any) {
-      toast.error("Erro ao carregar projetos");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: projects, isLoading, deleteProject } = useProjects();
 
   const copyLink = (linkUnique: string) => {
     const url = `${window.location.origin}/form/${linkUnique}`;
@@ -60,33 +18,10 @@ export default function Projects() {
     toast.success("Link copiado!");
   };
 
-  const deleteProject = async (id: string) => {
+  const handleDeleteProject = (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este projeto?")) return;
-
-    try {
-      const { error } = await supabase
-        .from("projects")
-        .delete()
-        .eq("id", id);
-
-      if (error) throw error;
-
-      toast.success("Projeto excluído");
-      loadProjects();
-    } catch (error: any) {
-      toast.error("Erro ao excluir projeto");
-    }
+    deleteProject(id);
   };
-
-  if (loading) {
-    return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center h-96">
-          <p className="text-muted-foreground">Carregando...</p>
-        </div>
-      </DashboardLayout>
-    );
-  }
 
   return (
     <DashboardLayout>
@@ -104,7 +39,29 @@ export default function Projects() {
           </Button>
         </div>
 
-        {projects.length === 0 ? (
+        {isLoading ? (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Card key={i}>
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <Skeleton className="h-6 w-40" />
+                    <Skeleton className="h-5 w-20" />
+                  </div>
+                  <Skeleton className="h-4 w-full mt-2" />
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="flex gap-2">
+                    <Skeleton className="h-8 flex-1" />
+                    <Skeleton className="h-8 w-10" />
+                    <Skeleton className="h-8 w-10" />
+                  </div>
+                  <Skeleton className="h-3 w-32" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : projects && projects.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <p className="text-muted-foreground mb-4">
@@ -118,7 +75,7 @@ export default function Projects() {
           </Card>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {projects.map((project) => (
+            {projects && projects.map((project) => (
               <Card key={project.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex justify-between items-start">
@@ -152,7 +109,7 @@ export default function Projects() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => deleteProject(project.id)}
+                      onClick={() => handleDeleteProject(project.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
