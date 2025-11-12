@@ -5,7 +5,8 @@ import { Switch } from "@/components/ui/switch";
 import { useTheme } from "next-themes";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Bell, Shield, User } from "lucide-react";
+import { Bell, Shield, User, Sparkles, Info } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function Settings() {
   const { theme, setTheme } = useTheme();
@@ -102,6 +103,64 @@ export default function Settings() {
                 </div>
               </>
             )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              <CardTitle>Inteligência Artificial</CardTitle>
+            </div>
+            <CardDescription>
+              Configurações da análise inteligente de respostas
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Alert>
+              <Info className="h-4 w-4" />
+              <AlertDescription>
+                Este sistema usa Lovable AI (modelo google/gemini-2.5-flash) para análise de respostas. 
+                As análises consomem créditos do seu workspace.
+              </AlertDescription>
+            </Alert>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/20 p-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full bg-green-500" />
+                    <span className="font-medium">Status da Integração</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Lovable AI Gateway ativo
+                  </p>
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-border/50 bg-muted/20 p-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Modelo:</span>
+                    <span className="font-medium">google/gemini-2.5-flash</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Limite de análise:</span>
+                    <span className="font-medium">500 respostas por análise</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Tipo de análise:</span>
+                    <span className="font-medium">Manual</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4">
+                <p className="text-sm text-amber-600 dark:text-amber-400">
+                  <strong>Importante:</strong> Cada análise consome créditos. Gerencie seus créditos em Configurações → Workspace → Uso.
+                </p>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
