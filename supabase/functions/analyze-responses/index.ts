@@ -58,7 +58,7 @@ serve(async (req) => {
 
     if (responsesError) {
       console.error('Error fetching responses:', responsesError);
-      throw responsesError;
+      throw new Error(`Database error: ${responsesError.message}`);
     }
 
     console.log(`Found ${responses?.length || 0} responses`);
@@ -153,7 +153,13 @@ IMPORTANTE: Retorne APENAS o JSON, sem markdown ou texto adicional.`
     const aiData = await aiResponse.json();
     console.log('AI response received');
     
+    if (!aiData.choices || !aiData.choices[0] || !aiData.choices[0].message) {
+      console.error('Invalid AI response structure:', JSON.stringify(aiData));
+      throw new Error('Invalid AI response structure');
+    }
+    
     let analysisText = aiData.choices[0].message.content;
+    console.log('Raw AI content:', analysisText.substring(0, 200));
     
     // Remove markdown code blocks if present
     analysisText = analysisText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
@@ -161,13 +167,32 @@ IMPORTANTE: Retorne APENAS o JSON, sem markdown ou texto adicional.`
     let analysis;
     try {
       analysis = JSON.parse(analysisText);
+      console.log('Successfully parsed AI response');
+      
+      // Validate structure
+      if (!analysis.metrics) {
+        console.warn('Missing metrics in AI response, adding defaults');
+        analysis.metrics = {
+          totalResponses: responses.length,
+          averageRating: 0,
+          negativeCount: 0,
+          positiveCount: 0
+        };
+      }
+      
+      // Ensure arrays exist
+      analysis.recommendations = Array.isArray(analysis.recommendations) ? analysis.recommendations : [];
+      analysis.negativeIssues = Array.isArray(analysis.negativeIssues) ? analysis.negativeIssues : [];
+      analysis.positiveHighlights = Array.isArray(analysis.positiveHighlights) ? analysis.positiveHighlights : [];
+      
     } catch (parseError) {
-      console.error('Failed to parse AI response as JSON:', analysisText);
+      console.error('Failed to parse AI response as JSON. Raw text:', analysisText);
+      console.error('Parse error:', parseError);
       // Fallback structure
       analysis = {
-        summary: analysisText,
-        recommendations: ['Não foi possível extrair recomendações específicas'],
-        negativeIssues: ['Análise detalhada indisponível'],
+        summary: analysisText.substring(0, 500) || 'Não foi possível processar a análise',
+        recommendations: ['Análise parcial: não foi possível extrair recomendações estruturadas'],
+        negativeIssues: [],
         positiveHighlights: [],
         metrics: {
           totalResponses: responses.length,
@@ -178,7 +203,7 @@ IMPORTANTE: Retorne APENAS o JSON, sem markdown ou texto adicional.`
       };
     }
 
-    console.log('Analysis complete');
+    console.log('Analysis complete with', analysis.recommendations.length, 'recommendations');
 
     return new Response(
       JSON.stringify({ analysis }),

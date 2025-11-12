@@ -33,6 +33,7 @@ export default function AIAnalysis() {
       
       if (!session) {
         toast.error("Você precisa estar autenticado");
+        setLoading(false);
         return;
       }
 
@@ -44,19 +45,51 @@ export default function AIAnalysis() {
 
       if (error) {
         console.error('Edge function error:', error);
-        throw error;
-      }
-
-      if (data.error) {
-        toast.error(data.error);
+        toast.error("Erro ao conectar com o servidor. Tente novamente.");
+        setLoading(false);
         return;
       }
 
-      setAnalysis(data.analysis);
+      if (data?.error) {
+        const errorMsg = data.error;
+        if (errorMsg.includes('Nenhuma resposta') || errorMsg.includes('No responses')) {
+          toast.error("Nenhuma resposta encontrada para análise");
+        } else if (errorMsg.includes('Limite') || errorMsg.includes('429')) {
+          toast.error("Limite de requisições excedido. Aguarde alguns minutos.");
+        } else if (errorMsg.includes('Créditos') || errorMsg.includes('402')) {
+          toast.error("Créditos insuficientes. Adicione créditos ao seu workspace.");
+        } else {
+          toast.error(errorMsg);
+        }
+        setLoading(false);
+        return;
+      }
+
+      // Validate analysis data structure
+      if (!data?.analysis) {
+        toast.error("Resposta inválida do servidor");
+        setLoading(false);
+        return;
+      }
+
+      const validatedAnalysis: AnalysisResult = {
+        summary: data.analysis.summary || "Análise não disponível",
+        recommendations: Array.isArray(data.analysis.recommendations) ? data.analysis.recommendations : [],
+        negativeIssues: Array.isArray(data.analysis.negativeIssues) ? data.analysis.negativeIssues : [],
+        positiveHighlights: Array.isArray(data.analysis.positiveHighlights) ? data.analysis.positiveHighlights : [],
+        metrics: {
+          totalResponses: data.analysis.metrics?.totalResponses || 0,
+          averageRating: data.analysis.metrics?.averageRating || 0,
+          negativeCount: data.analysis.metrics?.negativeCount || 0,
+          positiveCount: data.analysis.metrics?.positiveCount || 0,
+        }
+      };
+
+      setAnalysis(validatedAnalysis);
       toast.success("Análise concluída com sucesso!");
     } catch (error: any) {
       console.error("Erro ao analisar:", error);
-      toast.error("Erro ao realizar análise");
+      toast.error(error?.message || "Erro ao realizar análise. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -72,35 +105,39 @@ export default function AIAnalysis() {
   const dashboardData = analysis ? [
     {
       title: "Total de Respostas",
-      value: analysis.metrics.totalResponses,
+      value: analysis.metrics.totalResponses || 0,
       change: "Últimos 30 dias",
       changeType: "positive" as const,
       icon: TrendingUp,
-      chartData: generateChartData(analysis.metrics.totalResponses),
+      chartData: generateChartData(analysis.metrics.totalResponses || 0),
     },
     {
       title: "Avaliação Média",
-      value: analysis.metrics.averageRating.toFixed(1),
-      change: `${analysis.metrics.positiveCount} positivas`,
+      value: (analysis.metrics.averageRating || 0).toFixed(1),
+      change: `${analysis.metrics.positiveCount || 0} positivas`,
       changeType: "positive" as const,
       icon: ThumbsUp,
-      chartData: generateChartData(analysis.metrics.averageRating * 20),
+      chartData: generateChartData((analysis.metrics.averageRating || 0) * 20),
     },
     {
       title: "Feedbacks Negativos",
-      value: analysis.metrics.negativeCount,
-      change: `${((analysis.metrics.negativeCount / analysis.metrics.totalResponses) * 100).toFixed(1)}% do total`,
+      value: analysis.metrics.negativeCount || 0,
+      change: analysis.metrics.totalResponses > 0 
+        ? `${((analysis.metrics.negativeCount / analysis.metrics.totalResponses) * 100).toFixed(1)}% do total`
+        : "0% do total",
       changeType: "negative" as const,
       icon: AlertTriangle,
-      chartData: generateChartData(analysis.metrics.negativeCount),
+      chartData: generateChartData(analysis.metrics.negativeCount || 0),
     },
     {
       title: "Feedbacks Positivos",
-      value: analysis.metrics.positiveCount,
-      change: `${((analysis.metrics.positiveCount / analysis.metrics.totalResponses) * 100).toFixed(1)}% do total`,
+      value: analysis.metrics.positiveCount || 0,
+      change: analysis.metrics.totalResponses > 0
+        ? `${((analysis.metrics.positiveCount / analysis.metrics.totalResponses) * 100).toFixed(1)}% do total`
+        : "0% do total",
       changeType: "positive" as const,
       icon: ThumbsUp,
-      chartData: generateChartData(analysis.metrics.positiveCount),
+      chartData: generateChartData(analysis.metrics.positiveCount || 0),
     },
   ] : [];
 
