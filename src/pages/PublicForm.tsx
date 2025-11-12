@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -29,12 +29,17 @@ interface Question {
 
 export default function PublicForm() {
   const { linkUnique } = useParams();
+  const [searchParams] = useSearchParams();
   const [project, setProject] = useState<any>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  // Capturar parâmetros do Chatwoot da URL
+  const conversationId = searchParams.get('conversationId');
+  const accountId = searchParams.get('accountId');
 
   useEffect(() => {
     loadForm();
@@ -91,6 +96,8 @@ export default function PublicForm() {
           response_text: null,
           response_value: null,
           response_data: null,
+          chatwoot_conversation_id: conversationId || null,
+          chatwoot_account_id: accountId || null,
         };
 
         switch (question.question_type) {

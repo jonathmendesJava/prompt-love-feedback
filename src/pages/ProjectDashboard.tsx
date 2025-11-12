@@ -240,7 +240,7 @@ export default function ProjectDashboard() {
                               variant="outline"
                               size="sm"
                               onClick={() => window.open(
-                                `https://app.chatwoot.com/app/accounts/${submission.chatwoot_account_id}/conversations/${submission.chatwoot_conversation_id}`,
+                                `https://chatlink.fios.com.br/app/accounts/${submission.chatwoot_account_id}/conversations/${submission.chatwoot_conversation_id}`,
                                 '_blank'
                               )}
                             >
