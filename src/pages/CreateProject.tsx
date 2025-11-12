@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -45,7 +45,7 @@ export default function CreateProject() {
     { id: "1", question_text: "", question_type: "text", order_index: 0, scale_config: {} },
   ]);
 
-  const addQuestion = () => {
+  const addQuestion = useCallback(() => {
     const newQuestion: Question = {
       id: Date.now().toString(),
       question_text: "",
@@ -54,19 +54,19 @@ export default function CreateProject() {
       scale_config: {},
     };
     setQuestions([...questions, newQuestion]);
-  };
+  }, [questions]);
 
-  const removeQuestion = (id: string) => {
+  const removeQuestion = useCallback((id: string) => {
     setQuestions(questions.filter((q) => q.id !== id));
-  };
+  }, [questions]);
 
-  const updateQuestion = (id: string, field: string, value: any) => {
+  const updateQuestion = useCallback((id: string, field: string, value: any) => {
     setQuestions(
       questions.map((q) =>
         q.id === id ? { ...q, [field]: value } : q
       )
     );
-  };
+  }, [questions]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -268,7 +268,7 @@ export default function CreateProject() {
               )}
 
               {questions.map((question, index) => (
-                <div key={question.id} className="space-y-4">
+                <div key={`${question.id}-${question.question_type}`} className="space-y-4">
                   <div className="grid lg:grid-cols-2 gap-6">
                     {/* Coluna Esquerda - Configuração */}
                   <div className="space-y-4">
