@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import AnalyticsDashboard from "@/components/ui/analytics-dashboard";
-import { Sparkles, TrendingUp, AlertTriangle, ThumbsUp, Lightbulb } from "lucide-react";
+import { Sparkles, TrendingUp, AlertTriangle, ThumbsUp, Lightbulb, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -25,6 +25,71 @@ interface AnalysisResult {
 export default function AIAnalysis() {
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const exportToCSV = () => {
+    if (!analysis) return;
+
+    const timestamp = new Date().toLocaleString('pt-BR');
+    const lines: string[] = [];
+    
+    // Header
+    lines.push('"Relatório de Análise de Feedbacks com IA"');
+    lines.push(`"Data da Análise","${timestamp}"`);
+    lines.push(`"Total de Respostas","${analysis.metrics.totalResponses}"`);
+    lines.push('');
+    
+    // Metrics
+    lines.push('"MÉTRICAS"');
+    lines.push('"Métrica","Valor"');
+    lines.push(`"Total de Respostas","${analysis.metrics.totalResponses}"`);
+    lines.push(`"Avaliação Média","${analysis.metrics.averageRating.toFixed(1)}"`);
+    lines.push(`"Feedbacks Positivos","${analysis.metrics.positiveCount}"`);
+    lines.push(`"Feedbacks Negativos","${analysis.metrics.negativeCount}"`);
+    lines.push('');
+    
+    // Summary
+    lines.push('"RESUMO GERAL"');
+    lines.push(`"${analysis.summary.replace(/"/g, '""')}"`);
+    lines.push('');
+    
+    // Recommendations
+    lines.push('"RECOMENDAÇÕES"');
+    lines.push('"Nº","Recomendação"');
+    analysis.recommendations.forEach((rec, idx) => {
+      lines.push(`"${idx + 1}","${rec.replace(/"/g, '""')}"`);
+    });
+    lines.push('');
+    
+    // Negative Issues
+    lines.push('"PONTOS DE ATENÇÃO"');
+    lines.push('"Nº","Problema Identificado"');
+    analysis.negativeIssues.forEach((issue, idx) => {
+      lines.push(`"${idx + 1}","${issue.replace(/"/g, '""')}"`);
+    });
+    lines.push('');
+    
+    // Positive Highlights
+    lines.push('"PONTOS POSITIVOS"');
+    lines.push('"Nº","Destaque"');
+    analysis.positiveHighlights.forEach((highlight, idx) => {
+      lines.push(`"${idx + 1}","${highlight.replace(/"/g, '""')}"`);
+    });
+    
+    // Create and download file
+    const csvContent = lines.join('\n');
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', `analise-feedback-${new Date().getTime()}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast.success("Relatório exportado com sucesso!");
+  };
 
   const handleAnalyze = async () => {
     setLoading(true);
@@ -113,11 +178,15 @@ export default function AIAnalysis() {
     },
     {
       title: "Avaliação Média",
-      value: (analysis.metrics.averageRating || 0).toFixed(1),
+      value: analysis.metrics.averageRating > 0 
+        ? (analysis.metrics.averageRating).toFixed(1)
+        : "N/A",
       change: `${analysis.metrics.positiveCount || 0} positivas`,
       changeType: "positive" as const,
       icon: ThumbsUp,
-      chartData: generateChartData((analysis.metrics.averageRating || 0) * 20),
+      chartData: analysis.metrics.averageRating > 0 
+        ? generateChartData(analysis.metrics.averageRating * 10)
+        : [],
     },
     {
       title: "Feedbacks Negativos",
@@ -151,10 +220,18 @@ export default function AIAnalysis() {
               Análise inteligente de todos os feedbacks recebidos
             </p>
           </div>
-          <Button onClick={handleAnalyze} disabled={loading} size="lg" className="gap-2">
-            <Sparkles className="h-5 w-5" />
-            {loading ? "Analisando..." : "Analisar com IA"}
-          </Button>
+          <div className="flex gap-3">
+            {analysis && (
+              <Button onClick={exportToCSV} variant="outline" size="lg" className="gap-2">
+                <Download className="h-5 w-5" />
+                Exportar Relatório (CSV)
+              </Button>
+            )}
+            <Button onClick={handleAnalyze} disabled={loading} size="lg" className="gap-2">
+              <Sparkles className="h-5 w-5" />
+              {loading ? "Analisando..." : "Analisar com IA"}
+            </Button>
+          </div>
         </div>
 
         {loading && (

@@ -108,23 +108,40 @@ serve(async (req) => {
             role: 'system',
             content: `Você é um analista de feedback de clientes especializado. Analise os feedbacks fornecidos e retorne APENAS um JSON válido com a seguinte estrutura:
 {
-  "summary": "Resumo geral dos feedbacks em português",
+  "summary": "Resumo geral dos feedbacks em português (3-5 frases)",
   "recommendations": ["recomendação 1", "recomendação 2", "recomendação 3"],
   "negativeIssues": ["problema 1", "problema 2", "problema 3"],
   "positiveHighlights": ["ponto positivo 1", "ponto positivo 2"],
   "metrics": {
-    "totalResponses": número,
-    "averageRating": número,
-    "negativeCount": número,
-    "positiveCount": número
+    "totalResponses": número_total_de_respostas,
+    "averageRating": número_de_0_a_10,
+    "negativeCount": número_de_feedbacks_negativos,
+    "positiveCount": número_de_feedbacks_positivos
   }
 }
 
-IMPORTANTE: Retorne APENAS o JSON, sem markdown ou texto adicional.`
+INSTRUÇÕES PARA CÁLCULO DE MÉTRICAS:
+1. totalResponses: Conte o número total de feedbacks analisados
+2. averageRating (escala 0-10): 
+   - Se houver perguntas NPS, CSAT ou escalas numéricas: use a média real dos valores
+   - Para respostas textuais: analise o sentimento e atribua uma nota:
+     * Muito positivo: 8-10
+     * Positivo: 6-7.5
+     * Neutro: 5-6
+     * Negativo: 2-4.5
+     * Muito negativo: 0-2
+   - Calcule a média final de TODAS as respostas
+3. negativeCount: Conte feedbacks com sentimento negativo (críticas, reclamações, insatisfação)
+4. positiveCount: Conte feedbacks com sentimento positivo (elogios, satisfação, recomendações)
+
+IMPORTANTE: 
+- Retorne APENAS o JSON válido, sem markdown ou texto adicional
+- A avaliação média DEVE ser um número decimal entre 0 e 10
+- As contagens devem somar corretamente em relação ao total`
           },
           {
             role: 'user',
-            content: `Analise os seguintes feedbacks de clientes:\n\n${responsesText}\n\nTotal de respostas: ${responses.length}`
+            content: `Analise os seguintes feedbacks de clientes:\n\n${responsesText}\n\nTotal de respostas recebidas: ${responses.length}\n\nPor favor, analise cuidadosamente cada resposta, identifique o tipo de pergunta (NPS, CSAT, texto livre, escala), calcule as métricas solicitadas e forneça insights acionáveis.`
           }
         ],
       }),
