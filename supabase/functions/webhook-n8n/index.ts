@@ -3,7 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-webhook-secret',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-webhook-secret, x-project-id',
 };
 
 serve(async (req) => {
@@ -27,9 +27,19 @@ serve(async (req) => {
       );
     }
 
+    // Validate project ID header
+    const projectId = req.headers.get('X-Project-Id');
+    if (!projectId) {
+      console.error('Missing required header: X-Project-Id');
+      return new Response(
+        JSON.stringify({ error: 'X-Project-Id header is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Parse request body
     const body = await req.json();
-    const { conversationId, ...otherData } = body;
+    const { conversationId, accountId, ...otherData } = body;
 
     // Validate required fields
     if (!conversationId) {
@@ -40,8 +50,18 @@ serve(async (req) => {
       );
     }
 
+    if (!accountId) {
+      console.error('Missing required field: accountId');
+      return new Response(
+        JSON.stringify({ error: 'accountId is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     console.log('Processing webhook data:', { 
-      conversationId, 
+      projectId,
+      conversationId,
+      accountId,
       dataKeys: Object.keys(otherData),
       timestamp: new Date().toISOString()
     });
@@ -51,13 +71,42 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Fetch project details
+    const { data: project, error: projectError } = await supabase
+      .from('projects')
+      .select('link_unique, user_id')
+      .eq('id', projectId)
+      .single();
+
+    if (projectError || !project) {
+      console.error('Project not found:', projectError);
+      return new Response(
+        JSON.stringify({ error: 'Project not found' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Construct links
+    const baseUrl = supabaseUrl.replace('.supabase.co', '.lovable.app');
+    const formLink = `${baseUrl}/form/${project.link_unique}?conversationId=${conversationId}&accountId=${accountId}`;
+    const chatwootLink = `https://app.chatwoot.com/app/accounts/${accountId}/conversations/${conversationId}`;
+
+    console.log('Generated links:', { formLink, chatwootLink });
+
     // Upsert data (insert or update if conversation_id already exists)
     const { data, error } = await supabase
       .from('n8n_conversations')
       .upsert(
         {
           conversation_id: conversationId,
-          data: otherData,
+          user_id: project.user_id,
+          data: {
+            ...otherData,
+            accountId,
+            projectId,
+            formLink,
+            chatwootLink
+          },
           updated_at: new Date().toISOString()
         },
         { onConflict: 'conversation_id' }
@@ -76,6 +125,7 @@ serve(async (req) => {
     console.log('Successfully saved conversation:', {
       id: data.id,
       conversation_id: data.conversation_id,
+      project_id: projectId,
       timestamp: data.updated_at
     });
 
@@ -84,6 +134,10 @@ serve(async (req) => {
         success: true, 
         id: data.id,
         conversation_id: data.conversation_id,
+        account_id: accountId,
+        project_id: projectId,
+        formLink,
+        chatwootLink,
         message: 'Data received and stored successfully',
         timestamp: data.updated_at
       }),
