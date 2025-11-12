@@ -4,7 +4,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, Copy, Star, Eye } from "lucide-react";
+import { ArrowLeft, Copy, Star, Eye, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { FormResponseDialog } from "@/components/FormResponseDialog";
@@ -13,6 +13,8 @@ interface FormSubmission {
   session_id: string;
   submitted_at: string;
   question_count: number;
+  chatwoot_account_id?: string;
+  chatwoot_conversation_id?: string;
 }
 
 interface ResponseDetail {
@@ -54,8 +56,8 @@ export default function ProjectDashboard() {
       // Buscar todas as respostas para calcular estatísticas
       const { data: allResponses, error: responsesError } = await supabase
         .from("responses")
-        .select("session_id, response_value, submitted_at")
-        .eq("project_id", id);
+        .select("session_id, response_value, submitted_at, chatwoot_account_id, chatwoot_conversation_id")
+        .eq("project_id", id) as any;
 
       if (responsesError) throw responsesError;
 
@@ -83,6 +85,8 @@ export default function ProjectDashboard() {
             session_id: r.session_id,
             submitted_at: r.submitted_at,
             question_count: 1,
+            chatwoot_account_id: r.chatwoot_account_id,
+            chatwoot_conversation_id: r.chatwoot_conversation_id,
           });
         } else {
           const existing = submissionsMap.get(r.session_id)!;
@@ -230,14 +234,29 @@ export default function ProjectDashboard() {
                         </span>
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => loadSessionDetails(submission.session_id)}
-                        >
-                          <Eye className="h-4 w-4 mr-2" />
-                          Ver Detalhes
-                        </Button>
+                        <div className="flex gap-2 justify-end">
+                          {submission.chatwoot_conversation_id && submission.chatwoot_account_id && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => window.open(
+                                `https://app.chatwoot.com/app/accounts/${submission.chatwoot_account_id}/conversations/${submission.chatwoot_conversation_id}`,
+                                '_blank'
+                              )}
+                            >
+                              <MessageSquare className="h-4 w-4 mr-2" />
+                              Abrir Chatwoot
+                            </Button>
+                          )}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => loadSessionDetails(submission.session_id)}
+                          >
+                            <Eye className="h-4 w-4 mr-2" />
+                            Ver Detalhes
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
