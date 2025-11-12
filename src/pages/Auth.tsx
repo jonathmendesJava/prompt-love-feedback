@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,17 @@ export default function Auth() {
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
 
+  // Check if user is already authenticated
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/dashboard", { replace: true });
+      }
+    };
+    checkSession();
+  }, [navigate]);
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -29,11 +40,16 @@ export default function Auth() {
 
     if (error) {
       toast.error(error.message);
+      setLoading(false);
     } else {
       toast.success("Conta criada com sucesso!");
-      navigate("/dashboard");
+      // Verify session before navigating
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/dashboard", { replace: true });
+      }
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -47,10 +63,15 @@ export default function Auth() {
 
     if (error) {
       toast.error(error.message);
+      setLoading(false);
     } else {
-      navigate("/dashboard");
+      // Verify session before navigating
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/dashboard", { replace: true });
+      }
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
