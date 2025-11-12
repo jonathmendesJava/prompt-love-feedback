@@ -15,6 +15,7 @@ const ProjectDashboard = lazy(() => import("./pages/ProjectDashboard"));
 const PublicForm = lazy(() => import("./pages/PublicForm"));
 const Settings = lazy(() => import("./pages/Settings"));
 const KanbanView = lazy(() => import("./pages/KanbanView"));
+const AIAnalysis = lazy(() => import("./pages/AIAnalysis"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Loading fallback component
@@ -91,6 +92,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <KanbanView />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ai-analysis"
+              element={
+                <ProtectedRoute>
+                  <AIAnalysis />
                 </ProtectedRoute>
               }
             />

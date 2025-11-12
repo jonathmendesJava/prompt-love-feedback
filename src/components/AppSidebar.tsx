@@ -1,4 +1,4 @@
-import { Home, Settings, Plus, FolderOpen, Kanban as KanbanIcon } from "lucide-react";
+import { Home, Settings, Plus, FolderOpen, Kanban as KanbanIcon, Sparkles } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import fiosLogo from "@/assets/fios-logo.png";
@@ -19,6 +19,7 @@ const menuItems = [
   { title: "Criar Projeto", url: "/create-project", icon: Plus },
   { title: "Projetos Criados", url: "/projects", icon: FolderOpen },
   { title: "Gerenciar CTAs", url: "/kanban", icon: KanbanIcon },
+  { title: "Análise com IA", url: "/ai-analysis", icon: Sparkles },
   { title: "Configurações", url: "/settings", icon: Settings },
 ];
 
