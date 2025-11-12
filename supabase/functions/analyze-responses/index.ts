@@ -13,13 +13,8 @@ serve(async (req) => {
   }
 
   try {
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY not configured');
-    }
 
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
     
@@ -37,7 +32,31 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    console.log('Fetching responses for user:', user.id);
+    console.log('Fetching user preferences and responses for user:', user.id);
+
+    // Fetch user's OpenAI API key
+    const { data: preferences, error: prefsError } = await supabase
+      .from('user_preferences')
+      .select('openai_api_key')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (prefsError) {
+      console.error('Error fetching preferences:', prefsError);
+      throw new Error('Erro ao buscar preferências do usuário');
+    }
+
+    if (!preferences?.openai_api_key) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Token OpenAI não configurado. Configure seu token nas Configurações.' 
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const OPENAI_API_KEY = preferences.openai_api_key;
+    console.log('OpenAI token configured, fetching responses...');
 
     // Fetch all responses from user's projects
     const { data: responses, error: responsesError } = await supabase
@@ -92,17 +111,17 @@ serve(async (req) => {
       return `Projeto: ${projectName}\nPergunta: ${questionText}\nResposta: ${responseValue}\n---`;
     }).join('\n');
 
-    console.log('Calling Lovable AI for analysis...');
+    console.log('Calling OpenAI for analysis...');
 
-    // Call Lovable AI for analysis
-    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    // Call OpenAI API for analysis
+    const aiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -149,22 +168,28 @@ IMPORTANTE:
 
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
-      console.error('AI API error:', aiResponse.status, errorText);
+      console.error('OpenAI API error:', aiResponse.status, errorText);
       
+      if (aiResponse.status === 401) {
+        return new Response(
+          JSON.stringify({ error: 'Token OpenAI inválido. Verifique seu token nas Configurações.' }),
+          { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
       if (aiResponse.status === 429) {
         return new Response(
-          JSON.stringify({ error: 'Limite de taxa excedido. Tente novamente mais tarde.' }),
+          JSON.stringify({ error: 'Limite de taxa da OpenAI excedido. Tente novamente mais tarde.' }),
           { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-      if (aiResponse.status === 402) {
+      if (aiResponse.status === 402 || aiResponse.status === 403) {
         return new Response(
-          JSON.stringify({ error: 'Créditos insuficientes. Por favor, adicione créditos ao seu workspace.' }),
+          JSON.stringify({ error: 'Créditos insuficientes na sua conta OpenAI. Adicione créditos em platform.openai.com.' }),
           { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
       
-      throw new Error(`AI API error: ${aiResponse.status} - ${errorText}`);
+      throw new Error(`OpenAI API error: ${aiResponse.status} - ${errorText}`);
     }
 
     const aiData = await aiResponse.json();

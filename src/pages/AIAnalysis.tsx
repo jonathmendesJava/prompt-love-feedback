@@ -5,9 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import AnalyticsDashboard from "@/components/ui/analytics-dashboard";
-import { Sparkles, TrendingUp, AlertTriangle, ThumbsUp, Lightbulb, Download } from "lucide-react";
+import { Sparkles, TrendingUp, AlertTriangle, ThumbsUp, Lightbulb, Download, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
+import { useNavigate } from "react-router-dom";
 
 interface AnalysisResult {
   summary: string;
@@ -25,6 +27,8 @@ interface AnalysisResult {
 export default function AIAnalysis() {
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const { preferences, loading: prefsLoading } = useUserPreferences();
+  const navigate = useNavigate();
 
   const exportToCSV = () => {
     if (!analysis) return;
@@ -92,6 +96,18 @@ export default function AIAnalysis() {
   };
 
   const handleAnalyze = async () => {
+    // Check if OpenAI token is configured
+    if (!preferences.has_openai_key) {
+      toast.error("Configure seu token OpenAI nas Configurações para usar esta funcionalidade", {
+        action: {
+          label: "Ir para Configurações",
+          onClick: () => navigate("/settings")
+        },
+        duration: 5000,
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -119,10 +135,26 @@ export default function AIAnalysis() {
         const errorMsg = data.error;
         if (errorMsg.includes('Nenhuma resposta') || errorMsg.includes('No responses')) {
           toast.error("Nenhuma resposta encontrada para análise");
+        } else if (errorMsg.includes('Token OpenAI não configurado')) {
+          toast.error("Configure seu token OpenAI nas Configurações", {
+            action: {
+              label: "Configurações",
+              onClick: () => navigate("/settings")
+            },
+            duration: 5000,
+          });
+        } else if (errorMsg.includes('Token OpenAI inválido') || errorMsg.includes('401')) {
+          toast.error("Token OpenAI inválido. Verifique seu token nas Configurações", {
+            action: {
+              label: "Configurações",
+              onClick: () => navigate("/settings")
+            },
+            duration: 5000,
+          });
         } else if (errorMsg.includes('Limite') || errorMsg.includes('429')) {
-          toast.error("Limite de requisições excedido. Aguarde alguns minutos.");
+          toast.error("Limite de requisições da OpenAI excedido. Tente novamente mais tarde.");
         } else if (errorMsg.includes('Créditos') || errorMsg.includes('402')) {
-          toast.error("Créditos insuficientes. Adicione créditos ao seu workspace.");
+          toast.error("Créditos insuficientes na sua conta OpenAI. Adicione créditos em platform.openai.com.");
         } else {
           toast.error(errorMsg);
         }
@@ -227,7 +259,12 @@ export default function AIAnalysis() {
                 Exportar Relatório (CSV)
               </Button>
             )}
-            <Button onClick={handleAnalyze} disabled={loading} size="lg" className="gap-2">
+            <Button 
+              onClick={handleAnalyze} 
+              disabled={loading || prefsLoading || !preferences.has_openai_key} 
+              size="lg" 
+              className="gap-2"
+            >
               <Sparkles className="h-5 w-5" />
               {loading ? "Analisando..." : "Analisar com IA"}
             </Button>
@@ -261,8 +298,16 @@ export default function AIAnalysis() {
                 Nenhuma análise realizada ainda
               </p>
               <p className="text-sm text-muted-foreground mb-6">
-                Clique no botão acima para iniciar a análise com IA
+                {!preferences.has_openai_key 
+                  ? "Configure seu token OpenAI para começar"
+                  : "Clique no botão acima para iniciar a análise com IA"}
               </p>
+              {!preferences.has_openai_key && !prefsLoading && (
+                <Button onClick={() => navigate("/settings")} variant="outline" className="gap-2">
+                  <Settings className="h-4 w-4" />
+                  Ir para Configurações
+                </Button>
+              )}
             </CardContent>
           </Card>
         )}

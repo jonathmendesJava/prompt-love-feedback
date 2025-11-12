@@ -162,6 +162,7 @@ export type Database = {
           data_sharing: boolean
           email_notifications: boolean
           id: string
+          openai_api_key: string | null
           updated_at: string
           user_id: string
           weekly_reports: boolean
@@ -171,6 +172,7 @@ export type Database = {
           data_sharing?: boolean
           email_notifications?: boolean
           id?: string
+          openai_api_key?: string | null
           updated_at?: string
           user_id: string
           weekly_reports?: boolean
@@ -180,6 +182,7 @@ export type Database = {
           data_sharing?: boolean
           email_notifications?: boolean
           id?: string
+          openai_api_key?: string | null
           updated_at?: string
           user_id?: string
           weekly_reports?: boolean

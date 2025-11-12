@@ -8,7 +8,10 @@ interface UserPreferences {
   email_notifications: boolean;
   weekly_reports: boolean;
   data_sharing: boolean;
+  has_openai_key?: boolean;
 }
+
+export type { UserPreferences };
 
 export function useUserPreferences() {
   const [preferences, setPreferences] = useState<UserPreferences>({
@@ -41,7 +44,10 @@ export function useUserPreferences() {
       if (error) throw error;
 
       if (data) {
-        setPreferences(data);
+        setPreferences({
+          ...data,
+          has_openai_key: !!data.openai_api_key,
+        });
       } else {
         // Create default preferences if they don't exist
         const { data: newPrefs, error: insertError } = await supabase
@@ -92,10 +98,60 @@ export function useUserPreferences() {
     }
   };
 
+  const updateOpenAIToken = async (token: string) => {
+    setSaving(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) throw new Error("Usuário não autenticado");
+
+      const { error } = await supabase
+        .from("user_preferences")
+        .update({ openai_api_key: token })
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+
+      setPreferences((prev) => ({ ...prev, has_openai_key: true }));
+      toast.success("Token OpenAI salvo com sucesso!");
+    } catch (error) {
+      console.error("Error updating OpenAI token:", error);
+      toast.error("Erro ao salvar token OpenAI");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const removeOpenAIToken = async () => {
+    setSaving(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) throw new Error("Usuário não autenticado");
+
+      const { error } = await supabase
+        .from("user_preferences")
+        .update({ openai_api_key: null })
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+
+      setPreferences((prev) => ({ ...prev, has_openai_key: false }));
+      toast.success("Token OpenAI removido com sucesso!");
+    } catch (error) {
+      console.error("Error removing OpenAI token:", error);
+      toast.error("Erro ao remover token OpenAI");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return {
     preferences,
     loading,
     saving,
     updatePreference,
+    updateOpenAIToken,
+    removeOpenAIToken,
   };
 }
