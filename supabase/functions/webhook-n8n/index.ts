@@ -87,7 +87,7 @@ serve(async (req) => {
     }
 
     // Construct links
-    const baseUrl = supabaseUrl.replace('.supabase.co', '.lovable.app');
+    const baseUrl = 'https://dizai.lovable.app';
     const formLink = `${baseUrl}/form/${project.link_unique}?conversationId=${conversationId}&accountId=${accountId}`;
     const chatwootLink = `https://app.chatwoot.com/app/accounts/${accountId}/conversations/${conversationId}`;
 
