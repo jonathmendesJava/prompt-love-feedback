@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,7 @@ interface Question {
 export default function CreateProject() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const isSubmittingRef = useRef(false);
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [publicTitle, setPublicTitle] = useState("");
@@ -70,11 +71,38 @@ export default function CreateProject() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Prevenir submissão dupla
+    if (isSubmittingRef.current) {
+      console.log("Submissão já em andamento, ignorando...");
+      return;
+    }
+
+    // Validação antes de submeter
+    if (!projectName.trim()) {
+      toast.error("Por favor, preencha o nome do projeto");
+      return;
+    }
+
+    if (questions.length === 0) {
+      toast.error("Adicione pelo menos uma pergunta ao projeto");
+      return;
+    }
+
+    const hasEmptyQuestions = questions.some(q => !q.question_text.trim());
+    if (hasEmptyQuestions) {
+      toast.error("Todas as perguntas devem ter um texto preenchido");
+      return;
+    }
+
+    isSubmittingRef.current = true;
     setLoading(true);
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
+
+      console.log("Criando projeto:", projectName);
 
       const { data: project, error: projectError } = await supabase
         .from("projects")
@@ -90,7 +118,12 @@ export default function CreateProject() {
         .select()
         .single();
 
-      if (projectError) throw projectError;
+      if (projectError) {
+        console.error("Erro ao criar projeto:", projectError);
+        throw projectError;
+      }
+
+      console.log("Projeto criado com ID:", project.id);
 
       const questionsToInsert = questions.map((q, index) => ({
         project_id: project.id,
@@ -104,13 +137,23 @@ export default function CreateProject() {
         .from("questions")
         .insert(questionsToInsert);
 
-      if (questionsError) throw questionsError;
+      if (questionsError) {
+        console.error("Erro ao criar perguntas:", questionsError);
+        throw questionsError;
+      }
 
+      console.log("Perguntas criadas com sucesso");
+      
       toast.success("Projeto criado com sucesso!");
-      navigate("/projects");
+      
+      // Aguardar um pouco antes de navegar para garantir que o toast seja visto
+      setTimeout(() => {
+        navigate("/projects", { replace: true });
+      }, 500);
     } catch (error: any) {
-      toast.error(error.message || "Erro ao criar projeto");
-    } finally {
+      console.error("Erro completo:", error);
+      toast.error(error.message || "Erro ao criar projeto. Tente novamente.");
+      isSubmittingRef.current = false;
       setLoading(false);
     }
   };
@@ -126,6 +169,20 @@ export default function CreateProject() {
         </div>
 
         <form onSubmit={handleSubmit}>
+          {loading && (
+            <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+              <Card className="w-auto">
+                <CardContent className="pt-6 pb-6 px-8">
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                    <p className="text-lg font-medium">Salvando projeto...</p>
+                    <p className="text-sm text-muted-foreground">Por favor, aguarde</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+          
           <Card>
             <CardHeader>
               <CardTitle>Informações Básicas</CardTitle>
