@@ -23,6 +23,9 @@ interface QuestionPreviewProps {
   projectDescription?: string;
   clientBrandName?: string;
   clientLogoUrl?: string;
+  logoPosition?: 'top' | 'left' | 'right' | 'bottom' | 'only';
+  logoSize?: 'small' | 'medium' | 'large' | 'custom';
+  logoCustomHeight?: number;
 }
 
 export default function QuestionPreview({ 
@@ -35,6 +38,9 @@ export default function QuestionPreview({
   projectDescription,
   clientBrandName,
   clientLogoUrl,
+  logoPosition,
+  logoSize,
+  logoCustomHeight,
 }: QuestionPreviewProps) {
   const renderInput = () => {
     switch (question.question_type) {
@@ -105,6 +111,9 @@ export default function QuestionPreview({
           projectDescription={projectDescription}
           clientBrandName={clientBrandName}
           clientLogoUrl={clientLogoUrl}
+          logoPosition={logoPosition}
+          logoSize={logoSize}
+          logoCustomHeight={logoCustomHeight}
         />
       )}
       

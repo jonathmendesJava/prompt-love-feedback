@@ -50,7 +50,7 @@ export default function PublicForm() {
       // Fetch project data including public form text and client branding
       const { data: projectData, error: projectError } = await supabase
         .from("projects")
-        .select("id, name, description, public_title, public_description, client_brand_name, client_logo_url")
+        .select("id, name, description, public_title, public_description, client_brand_name, client_logo_url, logo_position, logo_size, logo_custom_height")
         .eq("link_unique", linkUnique)
         .single();
 
@@ -176,18 +176,33 @@ export default function PublicForm() {
           </div>
 
           <CardHeader className="text-center pt-12">
-            {/* Logo e Nome do Cliente - Centro */}
+            {/* Logo e Nome do Cliente */}
             {((project as any)?.client_logo_url || (project as any)?.client_brand_name) && (
-              <div className="flex flex-col items-center gap-3 mb-6">
+              <div className={`flex items-center justify-center gap-4 mb-6 ${
+                (project as any)?.logo_position === 'left' || (project as any)?.logo_position === 'right' ? 'flex-row' : 'flex-col'
+              } ${(project as any)?.logo_position === 'right' ? 'flex-row-reverse' : ''} ${
+                (project as any)?.logo_position === 'bottom' ? 'flex-col-reverse' : ''
+              }`}>
+                
                 {(project as any)?.client_logo_url && (
                   <img 
                     src={(project as any).client_logo_url} 
                     alt="Logo" 
-                    className="h-16 w-auto max-w-xs object-contain"
+                    style={{ 
+                      height: `${
+                        (project as any)?.logo_size === 'small' ? 48 :
+                        (project as any)?.logo_size === 'medium' ? 64 :
+                        (project as any)?.logo_size === 'large' ? 96 :
+                        (project as any)?.logo_size === 'custom' ? ((project as any)?.logo_custom_height || 64) :
+                        64
+                      }px` 
+                    }}
+                    className="w-auto max-w-xs object-contain"
                     onError={(e) => e.currentTarget.style.display = 'none'}
                   />
                 )}
-                {(project as any)?.client_brand_name && (
+                
+                {(project as any)?.logo_position !== 'only' && (project as any)?.client_brand_name && (
                   <CardTitle className="text-3xl text-primary">
                     {(project as any).client_brand_name}
                   </CardTitle>
@@ -195,13 +210,15 @@ export default function PublicForm() {
               </div>
             )}
 
-            {/* Título e Descrição */}
-            <CardTitle className="text-2xl mt-2">
-              {(project as any)?.public_title || project?.name}
-            </CardTitle>
-            {((project as any)?.public_description || project?.description) && (
+            {/* Título e Descrição - SEM FALLBACK para project.name */}
+            {(project as any)?.public_title && (
+              <CardTitle className="text-2xl mt-2">
+                {(project as any).public_title}
+              </CardTitle>
+            )}
+            {(project as any)?.public_description && (
               <CardDescription className="text-base mt-2">
-                {(project as any)?.public_description || project?.description}
+                {(project as any).public_description}
               </CardDescription>
             )}
           </CardHeader>

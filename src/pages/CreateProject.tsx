@@ -42,6 +42,9 @@ export default function CreateProject() {
   const [publicDescription, setPublicDescription] = useState("");
   const [clientBrandName, setClientBrandName] = useState("");
   const [clientLogoUrl, setClientLogoUrl] = useState("");
+  const [logoPosition, setLogoPosition] = useState<'top' | 'left' | 'right' | 'bottom' | 'only'>('top');
+  const [logoSize, setLogoSize] = useState<'small' | 'medium' | 'large' | 'custom'>('medium');
+  const [logoCustomHeight, setLogoCustomHeight] = useState(64);
   const [questions, setQuestions] = useState<Question[]>([
     { id: "1", question_text: "", question_type: "text", order_index: 0, scale_config: {} },
   ]);
@@ -113,6 +116,9 @@ export default function CreateProject() {
           public_description: publicDescription || null,
           client_brand_name: clientBrandName || null,
           client_logo_url: clientLogoUrl || null,
+          logo_position: logoPosition,
+          logo_size: logoSize,
+          logo_custom_height: logoCustomHeight,
           user_id: user.id,
         })
         .select()
@@ -278,6 +284,63 @@ export default function CreateProject() {
                   )}
                 </div>
 
+                {/* Configurações de Layout da Logo */}
+                {clientLogoUrl && (
+                  <div className="space-y-4 border-t pt-4">
+                    <h4 className="font-medium text-sm">Layout da Logo</h4>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="logoPosition">Posição da Logo</Label>
+                      <Select value={logoPosition} onValueChange={(value: any) => setLogoPosition(value)}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="top">Acima do nome</SelectItem>
+                          <SelectItem value="left">À esquerda do nome</SelectItem>
+                          <SelectItem value="right">À direita do nome</SelectItem>
+                          <SelectItem value="bottom">Abaixo do nome</SelectItem>
+                          <SelectItem value="only">Apenas logo (sem nome)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="logoSize">Tamanho da Logo</Label>
+                      <Select value={logoSize} onValueChange={(value: any) => setLogoSize(value)}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="small">Pequeno (48px)</SelectItem>
+                          <SelectItem value="medium">Médio (64px)</SelectItem>
+                          <SelectItem value="large">Grande (96px)</SelectItem>
+                          <SelectItem value="custom">Personalizado</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {logoSize === 'custom' && (
+                      <div className="space-y-2">
+                        <Label htmlFor="logoCustomHeight">
+                          Altura da Logo (pixels)
+                        </Label>
+                        <Input
+                          id="logoCustomHeight"
+                          type="number"
+                          min="24"
+                          max="200"
+                          value={logoCustomHeight}
+                          onChange={(e) => setLogoCustomHeight(Number(e.target.value))}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Entre 24 e 200 pixels
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <Separator />
                 
                 <div className="space-y-2">
@@ -289,7 +352,7 @@ export default function CreateProject() {
                     onChange={(e) => setPublicTitle(e.target.value)}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Título principal que aparece no formulário público. Se vazio, usa o nome do projeto.
+                    Título principal que aparece no formulário público. Se vazio, nenhum título será exibido.
                   </p>
                 </div>
 
@@ -303,7 +366,7 @@ export default function CreateProject() {
                     rows={3}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Texto de introdução exibido antes das perguntas. Se vazio, usa a descrição do projeto.
+                    Texto de introdução exibido antes das perguntas. Se vazio, nenhuma descrição será exibida.
                   </p>
                 </div>
               </div>
@@ -488,6 +551,9 @@ export default function CreateProject() {
                           projectDescription={projectDescription}
                           clientBrandName={clientBrandName}
                           clientLogoUrl={clientLogoUrl}
+                          logoPosition={logoPosition}
+                          logoSize={logoSize}
+                          logoCustomHeight={logoCustomHeight}
                         />
                       </CardContent>
                     </Card>
