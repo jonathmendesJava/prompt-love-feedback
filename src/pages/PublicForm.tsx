@@ -50,7 +50,7 @@ export default function PublicForm() {
       // Fetch project data including public form text and client branding
       const { data: projectData, error: projectError } = await supabase
         .from("projects")
-        .select("id, name, description, public_title, public_description, client_brand_name, client_logo_url, logo_position, logo_size, logo_custom_height")
+        .select("*")
         .eq("link_unique", linkUnique)
         .single();
 
