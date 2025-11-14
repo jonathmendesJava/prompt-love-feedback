@@ -87,7 +87,7 @@ serve(async (req) => {
     }
 
     // Construct links
-    const baseUrl = 'https://dizai.lovable.app';
+    const baseUrl = Deno.env.get('PUBLIC_FORM_BASE_URL') || 'https://dizai.fios.com.br';
     const formLink = `${baseUrl}/form/${project.link_unique}?conversationId=${conversationId}&accountId=${accountId}`;
     const chatwootLink = `https://app.chatwoot.com/app/accounts/${accountId}/conversations/${conversationId}`;
 
