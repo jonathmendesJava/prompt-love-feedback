@@ -49,6 +49,9 @@ export type Database = {
           description: string | null
           id: string
           link_unique: string
+          logo_custom_height: number | null
+          logo_position: string | null
+          logo_size: string | null
           name: string
           public_description: string | null
           public_title: string | null
@@ -62,6 +65,9 @@ export type Database = {
           description?: string | null
           id?: string
           link_unique?: string
+          logo_custom_height?: number | null
+          logo_position?: string | null
+          logo_size?: string | null
           name: string
           public_description?: string | null
           public_title?: string | null
@@ -75,6 +81,9 @@ export type Database = {
           description?: string | null
           id?: string
           link_unique?: string
+          logo_custom_height?: number | null
+          logo_position?: string | null
+          logo_size?: string | null
           name?: string
           public_description?: string | null
           public_title?: string | null
@@ -136,6 +145,8 @@ export type Database = {
       }
       responses: {
         Row: {
+          chatwoot_account_id: string | null
+          chatwoot_conversation_id: string | null
           id: string
           project_id: string
           question_id: string
@@ -146,6 +157,8 @@ export type Database = {
           submitted_at: string
         }
         Insert: {
+          chatwoot_account_id?: string | null
+          chatwoot_conversation_id?: string | null
           id?: string
           project_id: string
           question_id: string
@@ -156,6 +169,8 @@ export type Database = {
           submitted_at?: string
         }
         Update: {
+          chatwoot_account_id?: string | null
+          chatwoot_conversation_id?: string | null
           id?: string
           project_id?: string
           question_id?: string
