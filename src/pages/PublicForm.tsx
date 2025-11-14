@@ -195,16 +195,16 @@ export default function PublicForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary p-4 py-12">
-      <div className="max-w-2xl mx-auto">
-        <Card className="shadow-xl relative">
+    <div className="min-h-screen bg-gradient-to-br from-background to-secondary px-3 py-6 sm:p-4 sm:py-12">
+      <div className="max-w-full sm:max-w-2xl mx-auto w-full">
+        <Card className="shadow-xl relative overflow-hidden">
           {/* Marca d'água FiOS DizAí - Superior Esquerdo */}
-          <div className="absolute top-4 left-4 flex items-center gap-2 opacity-60 z-10">
-            <img src={fiosLogo} alt="FiOS" className="h-6 w-auto" />
-            <span className="text-xs font-medium text-muted-foreground">FiOS DizAí</span>
+          <div className="absolute top-2 left-2 sm:top-4 sm:left-4 flex items-center gap-1 sm:gap-2 opacity-60 z-10">
+            <img src={fiosLogo} alt="FiOS" className="h-4 sm:h-6 w-auto" />
+            <span className="text-[10px] sm:text-xs font-medium text-muted-foreground">FiOS DizAí</span>
           </div>
 
-          <CardHeader className="text-center pt-12">
+          <CardHeader className="text-center pt-8 sm:pt-12 px-4 sm:px-6">
             {/* Logo e Nome do Cliente */}
             {((project as any)?.client_logo_url || (project as any)?.client_brand_name) && (
               <div className={`flex items-center justify-center gap-4 mb-6 ${
@@ -217,22 +217,22 @@ export default function PublicForm() {
                   <img 
                     src={(project as any).client_logo_url} 
                     alt="Logo" 
+                    className="w-auto max-w-[200px] sm:max-w-xs object-contain"
                     style={{ 
-                      height: `${
-                        (project as any)?.logo_size === 'small' ? 48 :
-                        (project as any)?.logo_size === 'medium' ? 64 :
-                        (project as any)?.logo_size === 'large' ? 96 :
-                        (project as any)?.logo_size === 'custom' ? ((project as any)?.logo_custom_height || 64) :
-                        64
-                      }px` 
+                      maxHeight: 
+                        (project as any)?.logo_size === 'small' ? '32px' :
+                        (project as any)?.logo_size === 'medium' ? '48px' :
+                        (project as any)?.logo_size === 'large' ? '64px' :
+                        (project as any)?.logo_size === 'custom' ? `${(project as any)?.logo_custom_height || 48}px` :
+                        '48px',
+                      height: 'auto'
                     }}
-                    className="w-auto max-w-xs object-contain"
                     onError={(e) => e.currentTarget.style.display = 'none'}
                   />
                 )}
                 
                 {(project as any)?.logo_position !== 'only' && (project as any)?.client_brand_name && (
-                  <CardTitle className="text-3xl text-primary">
+                  <CardTitle className="text-xl sm:text-2xl md:text-3xl text-primary">
                     {(project as any).client_brand_name}
                   </CardTitle>
                 )}
@@ -241,21 +241,21 @@ export default function PublicForm() {
 
             {/* Título e Descrição - SEM FALLBACK para project.name */}
             {(project as any)?.public_title && (
-              <CardTitle className="text-2xl mt-2">
+              <CardTitle className="text-lg sm:text-xl md:text-2xl mt-2">
                 {(project as any).public_title}
               </CardTitle>
             )}
             {(project as any)?.public_description && (
-              <CardDescription className="text-base mt-2">
+              <CardDescription className="text-sm sm:text-base mt-2 px-2">
                 {(project as any).public_description}
               </CardDescription>
             )}
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+          <CardContent className="px-4 sm:px-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               {questions.map((question, index) => (
-                <div key={question.id} className="space-y-3">
-                  <Label className="text-base font-semibold">
+                <div key={question.id} className="space-y-2 sm:space-y-3">
+                  <Label className="text-sm sm:text-base font-semibold block">
                     {index + 1}. {question.question_text}
                   </Label>
 
@@ -376,7 +376,7 @@ export default function PublicForm() {
                 </div>
               ))}
 
-              <Button type="submit" className="w-full" size="lg" disabled={submitting}>
+              <Button type="submit" className="w-full text-base sm:text-lg py-5 sm:py-6" size="lg" disabled={submitting}>
                 {submitting ? "Enviando..." : "Enviar Avaliação"}
               </Button>
             </form>
