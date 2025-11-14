@@ -17,6 +17,7 @@ const PublicForm = lazy(() => import("./pages/PublicForm"));
 const Settings = lazy(() => import("./pages/Settings"));
 const KanbanView = lazy(() => import("./pages/KanbanView"));
 const AIAnalysis = lazy(() => import("./pages/AIAnalysis"));
+const DebugForm = lazy(() => import("./pages/DebugForm"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Loading fallback component
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/form/:linkUnique" element={<PublicForm />} />
+            <Route path="/debug-form/:linkUnique" element={<DebugForm />} />
             <Route
               path="/dashboard"
               element={

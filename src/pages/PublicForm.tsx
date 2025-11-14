@@ -47,6 +47,10 @@ export default function PublicForm() {
 
   const loadForm = async () => {
     try {
+      console.log('🔍 [PublicForm] Buscando projeto:', linkUnique);
+      console.log('🌐 [PublicForm] URL:', window.location.href);
+      console.log('📱 [PublicForm] User Agent:', navigator.userAgent);
+      
       // Fetch project data including public form text and client branding
       const { data: projectData, error: projectError } = await supabase
         .from("projects")
@@ -54,13 +58,29 @@ export default function PublicForm() {
         .eq("link_unique", linkUnique)
         .single();
 
-      if (projectError) throw projectError;
+      console.log('📊 [PublicForm] Resultado da query:', { 
+        projectData, 
+        error: projectError,
+        errorDetails: projectError ? {
+          message: projectError.message,
+          code: projectError.code,
+          details: projectError.details,
+          hint: projectError.hint
+        } : null
+      });
+
+      if (projectError) {
+        console.error('❌ [PublicForm] Erro ao buscar projeto:', projectError);
+        throw projectError;
+      }
+      
       if (!projectData) {
-        console.error("Project not found");
-        return;
+        console.error('⚠️ [PublicForm] Projeto não encontrado');
+        throw new Error('Project not found');
       }
 
       setProject(projectData);
+      console.log('✅ [PublicForm] Projeto carregado:', projectData.name);
 
       const { data: questionsData, error: questionsError } = await supabase
         .from("questions")
@@ -68,12 +88,21 @@ export default function PublicForm() {
         .eq("project_id", projectData.id)
         .order("order_index");
 
-      if (questionsError) throw questionsError;
+      console.log('📋 [PublicForm] Perguntas carregadas:', questionsData?.length || 0);
+
+      if (questionsError) {
+        console.error('❌ [PublicForm] Erro ao buscar perguntas:', questionsError);
+        throw questionsError;
+      }
+      
       setQuestions(questionsData.map(q => ({
         ...q,
         scale_config: q.scale_config as any as ScaleConfig
       })) || []);
+      
+      console.log('🎉 [PublicForm] Formulário carregado com sucesso!');
     } catch (error) {
+      console.error('💥 [PublicForm] Erro no loadForm:', error);
       toast.error("Formulário não encontrado");
     } finally {
       setLoading(false);
