@@ -10,6 +10,7 @@ interface ResponseDetail {
   response_value: number | null;
   response_data: any;
   scale_config?: any;
+  order_index: number;
 }
 
 interface FormResponseDialogProps {

@@ -97,7 +97,10 @@ serve(async (req) => {
       throw new Error(`Database error: ${responsesError.message}`);
     }
 
-    console.log(`Found ${responses?.length || 0} responses`);
+    // Contar formulários únicos (sessões)
+    const uniqueSessions = new Set(responses.map(r => r.session_id));
+    const uniqueFormCount = uniqueSessions.size;
+    console.log(`Found ${responses?.length || 0} individual responses from ${uniqueFormCount} unique form submissions`);
 
     if (!responses || responses.length === 0) {
       return new Response(
@@ -177,7 +180,7 @@ IMPORTANTE:
           },
           {
             role: 'user',
-            content: `Analise os seguintes feedbacks de clientes:\n\n${responsesText}\n\nTotal de respostas recebidas: ${responses.length}\n\nPor favor, analise cuidadosamente cada resposta, identifique o tipo de pergunta (NPS, CSAT, texto livre, escala), calcule as métricas solicitadas e forneça insights acionáveis.`
+            content: `Analise os seguintes feedbacks de clientes:\n\n${responsesText}\n\nTotal de formulários submetidos: ${uniqueFormCount}\nTotal de respostas individuais: ${responses.length}\n\nPor favor, analise cuidadosamente cada resposta, identifique o tipo de pergunta (NPS, CSAT, texto livre, escala), calcule as métricas solicitadas e forneça insights acionáveis.`
           }
         ],
       }),
