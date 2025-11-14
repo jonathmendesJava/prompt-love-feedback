@@ -13,7 +13,7 @@ export default function HeartInput({ question, value, onChange, disabled }: Hear
   const maxHearts = question.scale_config?.maxValue || 5;
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-1.5 sm:gap-2 justify-center flex-wrap">
       {Array.from({ length: maxHearts }).map((_, i) => (
         <button
           key={i}
@@ -25,7 +25,7 @@ export default function HeartInput({ question, value, onChange, disabled }: Hear
           }`}
         >
           <Heart
-            className={`h-10 w-10 ${
+            className={`h-8 w-8 sm:h-10 sm:w-10 ${
               value && value > i
                 ? "fill-red-500 text-red-500"
                 : "text-muted-foreground"

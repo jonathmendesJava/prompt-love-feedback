@@ -15,15 +15,15 @@ export default function NPSInput({ question, value, onChange, disabled }: NPSInp
   };
 
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap gap-2">
+    <div className="space-y-2 sm:space-y-3">
+      <div className="grid grid-cols-6 sm:flex sm:flex-wrap gap-1.5 sm:gap-2">
         {Array.from({ length: 11 }).map((_, i) => (
           <button
             key={i}
             type="button"
             onClick={() => !disabled && onChange(i)}
             disabled={disabled}
-            className={`rating-button w-12 h-12 rounded-md border-2 font-semibold transition-colors ${
+            className={`rating-button w-10 h-10 sm:w-12 sm:h-12 text-sm sm:text-base rounded-md border-2 font-semibold transition-colors ${
               value === i
                 ? "rating-button-selected bg-primary text-primary-foreground border-primary"
                 : "border-border bg-background hover:border-primary hover:bg-primary/10"
@@ -33,7 +33,7 @@ export default function NPSInput({ question, value, onChange, disabled }: NPSInp
           </button>
         ))}
       </div>
-      <div className="flex justify-between text-xs text-muted-foreground px-1">
+      <div className="flex justify-between text-[11px] sm:text-xs text-muted-foreground px-1">
         <span>{labels.min}</span>
         <span>{labels.max}</span>
       </div>

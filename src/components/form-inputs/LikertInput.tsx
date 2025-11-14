@@ -18,15 +18,15 @@ export default function LikertInput({ question, value, onChange, disabled }: Lik
   const labels = question.scale_config?.likertLabels || defaultLabels[scale];
 
   return (
-    <div className="space-y-3">
-      <div className="flex flex-col gap-2">
+    <div className="space-y-2 sm:space-y-3">
+      <div className="flex flex-col gap-1.5 sm:gap-2">
         {labels.map((label, i) => (
           <button
             key={i}
             type="button"
             onClick={() => !disabled && onChange(i + 1)}
             disabled={disabled}
-            className={`likert-button p-3 rounded-lg border text-left font-medium ${
+            className={`likert-button p-2.5 sm:p-3 rounded-lg border text-left font-medium text-sm sm:text-base ${
               value === i + 1
                 ? "likert-button-selected"
                 : "border-border bg-background"

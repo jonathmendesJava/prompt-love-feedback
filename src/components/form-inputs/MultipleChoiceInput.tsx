@@ -34,7 +34,7 @@ export default function MultipleChoiceInput({ question, value, onChange, disable
       {options.map((option, index) => (
         <div
           key={index}
-          className={`choice-option flex items-center space-x-3 p-3 rounded-lg border ${
+          className={`choice-option flex items-center space-x-2 sm:space-x-3 p-2.5 sm:p-3 rounded-lg border ${
             selectedIndices.includes(index) ? "border-primary bg-primary/5" : "border-border"
           }`}
         >
@@ -46,7 +46,7 @@ export default function MultipleChoiceInput({ question, value, onChange, disable
           />
           <Label
             htmlFor={`option-${index}`}
-            className="flex-1 cursor-pointer font-normal"
+            className="flex-1 cursor-pointer font-normal text-sm sm:text-base"
           >
             {option}
           </Label>
