@@ -25,6 +25,7 @@ interface ResponseDetail {
   response_value: number | null;
   response_data: any;
   scale_config?: any;
+  order_index: number;
 }
 
 export default function ProjectDashboard() {
@@ -122,8 +123,7 @@ export default function ProjectDashboard() {
             order_index
           )
         `)
-        .eq("session_id", sessionId)
-        .order("id");
+        .eq("session_id", sessionId);
 
       if (error) throw error;
 
@@ -135,7 +135,9 @@ export default function ProjectDashboard() {
         response_value: r.response_value,
         response_data: r.response_data,
         scale_config: r.questions?.scale_config,
-      }));
+        order_index: r.questions?.order_index || 0,
+      }))
+      .sort((a, b) => a.order_index - b.order_index);
 
       setSessionResponses(formatted);
       setSelectedSession(sessionId);
