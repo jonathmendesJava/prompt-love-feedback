@@ -29,6 +29,11 @@ export default function Projects() {
     toast.success("Link copiado!");
   };
 
+  const copyProjectId = (id: string) => {
+    navigator.clipboard.writeText(id);
+    toast.success("ID do projeto copiado!");
+  };
+
   const handleDeleteProject = (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este projeto?")) return;
     deleteProject(id);
@@ -99,7 +104,7 @@ export default function Projects() {
                     {project.description || "Sem descrição"}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent className="space-y-3">
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
@@ -114,6 +119,7 @@ export default function Projects() {
                       variant="outline"
                       size="sm"
                       onClick={() => copyLink(project.link_unique)}
+                      title="Copiar link do formulário"
                     >
                       <Copy className="h-4 w-4" />
                     </Button>
@@ -123,6 +129,21 @@ export default function Projects() {
                       onClick={() => handleDeleteProject(project.id)}
                     >
                       <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">ID:</span>
+                    <code className="text-xs bg-muted px-2 py-0.5 rounded truncate max-w-[180px]" title={project.id}>
+                      {project.id}
+                    </code>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0"
+                      onClick={() => copyProjectId(project.id)}
+                      title="Copiar ID do projeto"
+                    >
+                      <Copy className="h-3 w-3" />
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
