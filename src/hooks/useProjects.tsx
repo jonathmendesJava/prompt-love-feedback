@@ -17,9 +17,13 @@ export function useProjects() {
   const query = useQuery({
     queryKey: ["projects"],
     queryFn: async (): Promise<Project[]> => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
+
       const { data: projectsData, error: projectsError } = await supabase
         .from("projects")
         .select("*")
+        .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
       if (projectsError) throw projectsError;
@@ -51,12 +55,17 @@ export function useProjects() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("projects")
         .delete()
-        .eq("id", id);
+        .eq("id", id)
+        .select();
 
       if (error) throw error;
+      
+      if (!data || data.length === 0) {
+        throw new Error("Não foi possível excluir. Você não tem permissão para este projeto.");
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
@@ -64,8 +73,8 @@ export function useProjects() {
       queryClient.invalidateQueries({ queryKey: ["kanban-cards"] });
       toast.success("Projeto excluído");
     },
-    onError: () => {
-      toast.error("Erro ao excluir projeto");
+    onError: (error: Error) => {
+      toast.error(error.message || "Erro ao excluir projeto");
     },
   });
 
